@@ -1,0 +1,77 @@
+provider:
+  name: fabrics
+
+data_sources:
+  app_group:
+    read:
+      path: /apps/fabrics.eda.nokia.com
+      method: GET
+
+  fabric:
+    read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: GET
+
+  fabric_list:
+    read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics
+      method: GET
+
+  isl:
+    read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: GET
+
+  isl_list:
+    read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls
+      method: GET
+
+  isl_ping:
+    read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}
+      method: GET
+
+  isl_ping_list:
+    read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings
+      method: GET
+
+  resource_list:
+    read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1
+      method: GET
+
+  workflow_get_inputs_resp_elem:
+    read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}/_input
+      method: GET
+
+resources:
+  fabric:
+    create:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics
+      method: POST
+    read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: GET
+    update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: PUT
+    delete:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: DELETE
+
+  isl:
+    create:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls
+      method: POST
+    read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: GET
+    update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: PUT
+    delete:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: DELETE

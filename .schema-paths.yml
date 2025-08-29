@@ -1,0 +1,161 @@
+app_group:
+  - read:
+      path: /apps/fabrics.eda.nokia.com
+      method: GET
+
+patch:
+  - update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: PATCH
+  - update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: PATCH
+
+resource_history:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_revs
+      method: GET
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_revs
+      method: GET
+
+resource_list:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1
+      method: GET
+
+resource_topology:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_topology
+      method: GET
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_topology
+      method: GET
+
+status:
+  - delete:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: DELETE
+  - delete:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: DELETE
+
+ui_result:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/_ui/{pathname}
+      method: GET
+
+workflow_get_inputs_resp_elem:
+  - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}/_input
+      method: GET
+
+workflow_input_data:
+  - update:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}/_input
+      method: PUT
+
+com.nokia.eda.fabrics.v1alpha1.fabric:
+  - create:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics
+      method: POST
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: GET
+  - update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: PUT
+
+com.nokia.eda.fabrics.v1alpha1.fabric_list:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/fabrics
+      method: GET
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics
+      method: GET
+  - delete:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics
+      method: DELETE
+
+com.nokia.eda.fabrics.v1alpha1.fabric_deleted_resources:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/_deleted
+      method: GET
+
+com.nokia.eda.fabrics.v1alpha1.isl:
+  - create:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls
+      method: POST
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: GET
+  - update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: PUT
+
+com.nokia.eda.fabrics.v1alpha1.isl_list:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/isls
+      method: GET
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls
+      method: GET
+  - delete:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls
+      method: DELETE
+
+com.nokia.eda.fabrics.v1alpha1.isl_deleted_resources:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/_deleted
+      method: GET
+
+com.nokia.eda.fabrics.v1alpha1.isl_ping:
+  - create:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings
+      method: POST
+  - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}
+      method: GET
+
+com.nokia.eda.fabrics.v1alpha1.isl_ping_list:
+  - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/islpings
+      method: GET
+  - read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings
+      method: GET
+
+totalPaths: 22
+totalSchemas: 46
+usedSchemas: 17
+unusedSchemas: 29
+unusedSchemaList:
+  - AppGroupVersion
+  - ErrorIndex
+  - ErrorItem
+  - ErrorResponse
+  - K8SPatchOp
+  - OverlayState
+  - Resource
+  - ResourceHistoryEntry
+  - StatusDetails
+  - TopoAttrMetadata
+  - TopoElemMetadata
+  - TopoLinkEndpoint
+  - TopoNodeGrouping
+  - TopoOverlayEndpoint
+  - TopoOverlayEndpointState
+  - TopoOverlayLink
+  - TopoOverlayLinkState
+  - TopoOverlayNode
+  - TopoOverlayNodeState
+  - TopoSchema
+  - Topology
+  - WorkflowId
+  - WorkflowIdentifier
+  - WorkflowInputDataElem
+  - com.nokia.eda.fabrics.v1alpha1.Fabric_DeletedResourceEntry
+  - com.nokia.eda.fabrics.v1alpha1.Fabric_metadata
+  - com.nokia.eda.fabrics.v1alpha1.ISL_DeletedResourceEntry
+  - com.nokia.eda.fabrics.v1alpha1.ISL_metadata
+  - com.nokia.eda.fabrics.v1alpha1.IslPing_metadata
