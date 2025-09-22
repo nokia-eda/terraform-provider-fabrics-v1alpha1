@@ -23,7 +23,7 @@ description: |-
 
 - `fields` (String) a comma-separated list of resource fields to fetch/return.  If unspecified, all fields are fetched.  If empty, only key-fields are fetched.
 - `filter` (String) an EQL "where" expression that will be used to filter the set of resources returned.
-- `labelselector` (String) a label selector string to filter the results based on CR labels
+- `label_selector` (String) a label selector string to filter the results based on CR labels
 
 ### Read-Only
 
@@ -55,7 +55,7 @@ Optional:
 - `inter_switch_links` (Attributes) (see [below for nested schema](#nestedatt--items--spec--inter_switch_links))
 - `leafs` (Attributes) (see [below for nested schema](#nestedatt--items--spec--leafs))
 - `overlay_protocol` (Attributes) Set the overlay protocol used (see [below for nested schema](#nestedatt--items--spec--overlay_protocol))
-- `route_leaking_2` (Attributes) Route leaking controlled by routing policies in and out of the DefaulRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--route_leaking_2))
+- `route_leaking` (Attributes) Route leaking controlled by routing policies in and out of the DefaulRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--route_leaking))
 - `spines` (Attributes) (see [below for nested schema](#nestedatt--items--spec--spines))
 - `super_spines` (Attributes) (see [below for nested schema](#nestedatt--items--spec--super_spines))
 - `system_pool_ipv4` (String) Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  If specified under the Leaf/Spine/Superspine/Borderleaf those will take precedence.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.
@@ -113,12 +113,12 @@ Optional:
 
 - `asn_pool` (String) Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.
 - `leaf_node_selector` (List of String) Label selector used to select Toponodes to configure as Leaf nodes.
-- `route_leaking_1` (Attributes) Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--leafs--route_leaking_1))
+- `route_leaking` (Attributes) Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--leafs--route_leaking))
 - `system_pool_ipv4` (String) Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.
 - `system_pool_ipv6` (String) Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.
 
-<a id="nestedatt--items--spec--leafs--route_leaking_1"></a>
-### Nested Schema for `items.spec.leafs.route_leaking_1`
+<a id="nestedatt--items--spec--leafs--route_leaking"></a>
+### Nested Schema for `items.spec.leafs.route_leaking`
 
 Optional:
 
@@ -160,7 +160,7 @@ Optional:
 - `import_policy` (List of String) Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.
 - `keychain` (String) Keychain to be used for authentication when overlay protocol is IBGP, ignored otherwise
 - `rr_client_node_selector` (List of String) Label selector used to select Toponodes to configure as DefaultRouteReflectorClients, these are typically Leaf or Borderleaf nodes.  Used on conjunction with rrNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.
-- `rr_ipaddresses` (List of String) List of route reflector IP addresses not provisioned by this instance of a Fabric resource.  Used with rrClientNodeSelector to configure the DefaultBGPPeers on the selected nodes to peer the list of external route reflector IPs.
+- `rr_ip_addresses` (List of String) List of route reflector IP addresses not provisioned by this instance of a Fabric resource.  Used with rrClientNodeSelector to configure the DefaultBGPPeers on the selected nodes to peer the list of external route reflector IPs.
 - `rr_node_selector` (List of String) Label selector used to select Toponodes to configure as DefaultRouteReflectors, these are typically Spine, Superspine or Borderleaf nodes. Used on conjunction with rrClientNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.
 - `timers` (Attributes) Timer configurations (see [below for nested schema](#nestedatt--items--spec--overlay_protocol--bgp--timers))
 
@@ -177,8 +177,8 @@ Optional:
 
 
 
-<a id="nestedatt--items--spec--route_leaking_2"></a>
-### Nested Schema for `items.spec.route_leaking_2`
+<a id="nestedatt--items--spec--route_leaking"></a>
+### Nested Schema for `items.spec.route_leaking`
 
 Optional:
 
@@ -192,13 +192,13 @@ Optional:
 Optional:
 
 - `asn_pool` (String) Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.
-- `route_leaking_3` (Attributes) Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--spines--route_leaking_3))
+- `route_leaking` (Attributes) Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--spines--route_leaking))
 - `spine_node_selector` (List of String) Label selector used to select Toponodes to configure as Spine nodes.
 - `system_pool_ipv4` (String) Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.
 - `system_pool_ipv6` (String) Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.
 
-<a id="nestedatt--items--spec--spines--route_leaking_3"></a>
-### Nested Schema for `items.spec.spines.route_leaking_3`
+<a id="nestedatt--items--spec--spines--route_leaking"></a>
+### Nested Schema for `items.spec.spines.route_leaking`
 
 Optional:
 
@@ -213,13 +213,13 @@ Optional:
 Optional:
 
 - `asn_pool` (String) Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.
-- `route_leaking_4` (Attributes) Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--super_spines--route_leaking_4))
+- `route_leaking` (Attributes) Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence. (see [below for nested schema](#nestedatt--items--spec--super_spines--route_leaking))
 - `super_spine_node_selector` (List of String) Label selector used to select Toponodes to configure as Superspine nodes.
 - `system_pool_ipv4` (String) Reference to an IPAllocationPool used to dynamically allocate an IPv4 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV4.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.
 - `system_pool_ipv6` (String) Reference to an IPAllocationPool used to dynamically allocate an IPv6 address to system/lo0 interfaces.  This reference will take precedence over the spec.systemPoolIPV6.  Both IPv4 and IPv6 pools can be configured simultaneously for dual-stack system/lo0 interfaces.
 
-<a id="nestedatt--items--spec--super_spines--route_leaking_4"></a>
-### Nested Schema for `items.spec.super_spines.route_leaking_4`
+<a id="nestedatt--items--spec--super_spines--route_leaking"></a>
+### Nested Schema for `items.spec.super_spines.route_leaking`
 
 Optional:
 
@@ -233,12 +233,12 @@ Optional:
 
 Optional:
 
-- `bfd_1` (Attributes) Enable BFD on underlay protocol (see [below for nested schema](#nestedatt--items--spec--underlay_protocol--bfd_1))
-- `bgp_1` (Attributes) Underlay specific BGP properties. (see [below for nested schema](#nestedatt--items--spec--underlay_protocol--bgp_1))
+- `bfd` (Attributes) Enable BFD on underlay protocol (see [below for nested schema](#nestedatt--items--spec--underlay_protocol--bfd))
+- `bgp` (Attributes) Underlay specific BGP properties. (see [below for nested schema](#nestedatt--items--spec--underlay_protocol--bgp))
 - `protocol` (List of String) List of routing protocols to used between peers of an ISL.  Multiple protocols may be listed, if so multiple protocols will be used.
 
-<a id="nestedatt--items--spec--underlay_protocol--bfd_1"></a>
-### Nested Schema for `items.spec.underlay_protocol.bfd_1`
+<a id="nestedatt--items--spec--underlay_protocol--bfd"></a>
+### Nested Schema for `items.spec.underlay_protocol.bfd`
 
 Optional:
 
@@ -250,8 +250,8 @@ Optional:
 - `ttl` (Number) Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.
 
 
-<a id="nestedatt--items--spec--underlay_protocol--bgp_1"></a>
-### Nested Schema for `items.spec.underlay_protocol.bgp_1`
+<a id="nestedatt--items--spec--underlay_protocol--bgp"></a>
+### Nested Schema for `items.spec.underlay_protocol.bgp`
 
 Optional:
 
@@ -259,10 +259,10 @@ Optional:
 - `export_policy` (List of String) Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.
 - `import_policy` (List of String) Reference to a Policy, when left empty or not specified the Fabric will automatically generate a policy for the specified protocols.
 - `keychain` (String) Keychain to be used for authentication
-- `timers_1` (Attributes) Timer configurations (see [below for nested schema](#nestedatt--items--spec--underlay_protocol--bgp_1--timers_1))
+- `timers` (Attributes) Timer configurations (see [below for nested schema](#nestedatt--items--spec--underlay_protocol--bgp--timers))
 
-<a id="nestedatt--items--spec--underlay_protocol--bgp_1--timers_1"></a>
-### Nested Schema for `items.spec.underlay_protocol.bgp_1.timers_1`
+<a id="nestedatt--items--spec--underlay_protocol--bgp--timers"></a>
+### Nested Schema for `items.spec.underlay_protocol.bgp.timers`
 
 Optional:
 

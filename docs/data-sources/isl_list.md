@@ -23,7 +23,7 @@ description: |-
 
 - `fields` (String) a comma-separated list of resource fields to fetch/return.  If unspecified, all fields are fetched.  If empty, only key-fields are fetched.
 - `filter` (String) an EQL "where" expression that will be used to filter the set of resources returned.
-- `labelselector` (String) a label selector string to filter the results based on CR labels
+- `label_selector` (String) a label selector string to filter the results based on CR labels
 
 ### Read-Only
 
@@ -130,8 +130,8 @@ Read-Only:
 Read-Only:
 
 - `default_interface` (String) Reference to the DefaulInterface assocaited with the local interface
-- `ipv4address` (String) Local Interface IPv4 address
-- `ipv6address` (String) Local Interface IPv4 address
+- `ipv4_address` (String) Local Interface IPv4 address
+- `ipv6_address` (String) Local Interface IPv4 address
 - `node` (String) Reference to the TopoNode on which the local interface is configured
 
 
@@ -141,6 +141,6 @@ Read-Only:
 Read-Only:
 
 - `default_interface` (String) Reference to the DefaulInterface assocaited with the remote interface
-- `ipv4address` (String) Remote Interface IPv4 address
-- `ipv6address` (String) Remote Interface IPv6 address
+- `ipv4_address` (String) Remote Interface IPv4 address
+- `ipv6_address` (String) Remote Interface IPv6 address
 - `node` (String) Reference to the TopoNode on which the remote interface is configured

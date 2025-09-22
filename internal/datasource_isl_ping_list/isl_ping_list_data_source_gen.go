@@ -105,7 +105,7 @@ func IslPingListDataSourceSchema(ctx context.Context) schema.Schema {
 								"details": schema.ListNestedAttribute{
 									NestedObject: schema.NestedAttributeObject{
 										Attributes: map[string]schema.Attribute{
-											"details_1": schema.SingleNestedAttribute{
+											"details": schema.SingleNestedAttribute{
 												Attributes: map[string]schema.Attribute{
 													"average_time_nanoseconds": schema.Int64Attribute{
 														Computed:            true,
@@ -205,7 +205,7 @@ func IslPingListDataSourceSchema(ctx context.Context) schema.Schema {
 			"kind": schema.StringAttribute{
 				Computed: true,
 			},
-			"labelselector": schema.StringAttribute{
+			"label_selector": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "a label selector string to filter the results based on CR labels",
@@ -226,7 +226,7 @@ type IslPingListModel struct {
 	Filter        types.String `tfsdk:"filter"`
 	Items         types.List   `tfsdk:"items"`
 	Kind          types.String `tfsdk:"kind"`
-	Labelselector types.String `tfsdk:"labelselector"`
+	LabelSelector types.String `tfsdk:"label_selector"`
 	Namespace     types.String `tfsdk:"namespace"`
 }
 
@@ -2396,7 +2396,7 @@ func (t DetailsType) ValueFromObject(ctx context.Context, in basetypes.ObjectVal
 
 	attributes := in.Attributes()
 
-	details1Attribute, ok := attributes["details_1"]
+	details1Attribute, ok := attributes["details"]
 
 	if !ok {
 		diags.AddError(
@@ -2544,7 +2544,7 @@ func NewDetailsValue(attributeTypes map[string]attr.Type, attributes map[string]
 		return NewDetailsValueUnknown(), diags
 	}
 
-	details1Attribute, ok := attributes["details_1"]
+	details1Attribute, ok := attributes["details"]
 
 	if !ok {
 		diags.AddError(
@@ -2697,7 +2697,7 @@ func (t DetailsType) ValueType(ctx context.Context) attr.Value {
 var _ basetypes.ObjectValuable = DetailsValue{}
 
 type DetailsValue struct {
-	Details1 basetypes.ObjectValue `tfsdk:"details_1"`
+	Details1 basetypes.ObjectValue `tfsdk:"details"`
 	Error    basetypes.StringValue `tfsdk:"error"`
 	Name     basetypes.StringValue `tfsdk:"name"`
 	Success  basetypes.BoolValue   `tfsdk:"success"`
@@ -2710,7 +2710,7 @@ func (v DetailsValue) ToTerraformValue(ctx context.Context) (tftypes.Value, erro
 	var val tftypes.Value
 	var err error
 
-	attrTypes["details_1"] = basetypes.ObjectType{
+	attrTypes["details"] = basetypes.ObjectType{
 		AttrTypes: Details1Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["error"] = basetypes.StringType{}.TerraformType(ctx)
@@ -2729,7 +2729,7 @@ func (v DetailsValue) ToTerraformValue(ctx context.Context) (tftypes.Value, erro
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["details_1"] = val
+		vals["details"] = val
 
 		val, err = v.Error.ToTerraformValue(ctx)
 
@@ -2806,7 +2806,7 @@ func (v DetailsValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue,
 	}
 
 	attributeTypes := map[string]attr.Type{
-		"details_1": basetypes.ObjectType{
+		"details": basetypes.ObjectType{
 			AttrTypes: Details1Value{}.AttributeTypes(ctx),
 		},
 		"error":   basetypes.StringType{},
@@ -2825,10 +2825,10 @@ func (v DetailsValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue,
 	objVal, diags := types.ObjectValue(
 		attributeTypes,
 		map[string]attr.Value{
-			"details_1": details1,
-			"error":     v.Error,
-			"name":      v.Name,
-			"success":   v.Success,
+			"details": details1,
+			"error":   v.Error,
+			"name":    v.Name,
+			"success": v.Success,
 		})
 
 	return objVal, diags
@@ -2878,7 +2878,7 @@ func (v DetailsValue) Type(ctx context.Context) attr.Type {
 
 func (v DetailsValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	return map[string]attr.Type{
-		"details_1": basetypes.ObjectType{
+		"details": basetypes.ObjectType{
 			AttrTypes: Details1Value{}.AttributeTypes(ctx),
 		},
 		"error":   basetypes.StringType{},

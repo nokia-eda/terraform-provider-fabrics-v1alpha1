@@ -74,13 +74,13 @@ It can be one of the following values:
 
 Read-Only:
 
-- `details_1` (Attributes) Details of the ping result, if available. (see [below for nested schema](#nestedatt--status--details--details_1))
+- `details` (Attributes) Details of the ping result, if available. (see [below for nested schema](#nestedatt--status--details--details))
 - `error` (String) Error message, if the ping failed.
 - `name` (String) Name of the ping result.
 - `success` (Boolean) Indicates if the ping was successful.
 
-<a id="nestedatt--status--details--details_1"></a>
-### Nested Schema for `status.details.details_1`
+<a id="nestedatt--status--details--details"></a>
+### Nested Schema for `status.details.details`
 
 Read-Only:
 

@@ -197,7 +197,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											Description:         "Label selector used to select Toponodes to configure as Leaf nodes.",
 											MarkdownDescription: "Label selector used to select Toponodes to configure as Leaf nodes.",
 										},
-										"route_leaking_1": schema.SingleNestedAttribute{
+										"route_leaking": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"export_policy": schema.StringAttribute{
 													Optional:            true,
@@ -316,7 +316,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													Description:         "Label selector used to select Toponodes to configure as DefaultRouteReflectorClients, these are typically Leaf or Borderleaf nodes.  Used on conjunction with rrNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.",
 													MarkdownDescription: "Label selector used to select Toponodes to configure as DefaultRouteReflectorClients, these are typically Leaf or Borderleaf nodes.  Used on conjunction with rrNodeSelector in order to configure the DefaultBGPPeers for both the DefaultRouteReflectors and DefaultRouteReflectorClients.",
 												},
-												"rr_ipaddresses": schema.ListAttribute{
+												"rr_ip_addresses": schema.ListAttribute{
 													ElementType:         types.StringType,
 													Optional:            true,
 													Description:         "List of route reflector IP addresses not provisioned by this instance of a Fabric resource.  Used with rrClientNodeSelector to configure the DefaultBGPPeers on the selected nodes to peer the list of external route reflector IPs.",
@@ -385,7 +385,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 									Description:         "Set the overlay protocol used",
 									MarkdownDescription: "Set the overlay protocol used",
 								},
-								"route_leaking_2": schema.SingleNestedAttribute{
+								"route_leaking": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
 										"export_policy": schema.StringAttribute{
 											Optional:            true,
@@ -414,7 +414,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											Description:         "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 											MarkdownDescription: "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 										},
-										"route_leaking_3": schema.SingleNestedAttribute{
+										"route_leaking": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"export_policy": schema.StringAttribute{
 													Optional:            true,
@@ -467,7 +467,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											Description:         "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 											MarkdownDescription: "Reference to an IndexAllocationPool pool to use for Autonomous System Number allocations.  Used when eBGP is configured as an underlay protocol. This reference will take precedence over the spec.underlayProtocol.asnPool.",
 										},
-										"route_leaking_4": schema.SingleNestedAttribute{
+										"route_leaking": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"export_policy": schema.StringAttribute{
 													Optional:            true,
@@ -525,7 +525,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 								},
 								"underlay_protocol": schema.SingleNestedAttribute{
 									Attributes: map[string]schema.Attribute{
-										"bfd_1": schema.SingleNestedAttribute{
+										"bfd": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"desired_min_transmit_int": schema.Int64Attribute{
 													Optional:            true,
@@ -567,7 +567,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 											Description:         "Enable BFD on underlay protocol",
 											MarkdownDescription: "Enable BFD on underlay protocol",
 										},
-										"bgp_1": schema.SingleNestedAttribute{
+										"bgp": schema.SingleNestedAttribute{
 											Attributes: map[string]schema.Attribute{
 												"asn_pool": schema.StringAttribute{
 													Optional:            true,
@@ -591,7 +591,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 													Description:         "Keychain to be used for authentication",
 													MarkdownDescription: "Keychain to be used for authentication",
 												},
-												"timers_1": schema.SingleNestedAttribute{
+												"timers": schema.SingleNestedAttribute{
 													Attributes: map[string]schema.Attribute{
 														"connect_retry": schema.Int64Attribute{
 															Optional:            true,
@@ -839,7 +839,7 @@ func FabricListDataSourceSchema(ctx context.Context) schema.Schema {
 			"kind": schema.StringAttribute{
 				Computed: true,
 			},
-			"labelselector": schema.StringAttribute{
+			"label_selector": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "a label selector string to filter the results based on CR labels",
@@ -860,7 +860,7 @@ type FabricListModel struct {
 	Filter        types.String `tfsdk:"filter"`
 	Items         types.List   `tfsdk:"items"`
 	Kind          types.String `tfsdk:"kind"`
-	Labelselector types.String `tfsdk:"labelselector"`
+	LabelSelector types.String `tfsdk:"label_selector"`
 	Namespace     types.String `tfsdk:"namespace"`
 }
 
@@ -2155,7 +2155,7 @@ func (t SpecType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 			fmt.Sprintf(`overlay_protocol expected to be basetypes.ObjectValue, was: %T`, overlayProtocolAttribute))
 	}
 
-	routeLeaking2Attribute, ok := attributes["route_leaking_2"]
+	routeLeaking2Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -2436,7 +2436,7 @@ func NewSpecValue(attributeTypes map[string]attr.Type, attributes map[string]att
 			fmt.Sprintf(`overlay_protocol expected to be basetypes.ObjectValue, was: %T`, overlayProtocolAttribute))
 	}
 
-	routeLeaking2Attribute, ok := attributes["route_leaking_2"]
+	routeLeaking2Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -2637,7 +2637,7 @@ type SpecValue struct {
 	InterSwitchLinks basetypes.ObjectValue `tfsdk:"inter_switch_links"`
 	Leafs            basetypes.ObjectValue `tfsdk:"leafs"`
 	OverlayProtocol  basetypes.ObjectValue `tfsdk:"overlay_protocol"`
-	RouteLeaking2    basetypes.ObjectValue `tfsdk:"route_leaking_2"`
+	RouteLeaking2    basetypes.ObjectValue `tfsdk:"route_leaking"`
 	Spines           basetypes.ObjectValue `tfsdk:"spines"`
 	SuperSpines      basetypes.ObjectValue `tfsdk:"super_spines"`
 	SystemPoolIpv4   basetypes.StringValue `tfsdk:"system_pool_ipv4"`
@@ -2667,7 +2667,7 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 	attrTypes["overlay_protocol"] = basetypes.ObjectType{
 		AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
-	attrTypes["route_leaking_2"] = basetypes.ObjectType{
+	attrTypes["route_leaking"] = basetypes.ObjectType{
 		AttrTypes: RouteLeaking2Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["spines"] = basetypes.ObjectType{
@@ -2734,7 +2734,7 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["route_leaking_2"] = val
+		vals["route_leaking"] = val
 
 		val, err = v.Spines.ToTerraformValue(ctx)
 
@@ -3002,7 +3002,7 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"overlay_protocol": basetypes.ObjectType{
 				AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
 			},
-			"route_leaking_2": basetypes.ObjectType{
+			"route_leaking": basetypes.ObjectType{
 				AttrTypes: RouteLeaking2Value{}.AttributeTypes(ctx),
 			},
 			"spines": basetypes.ObjectType{
@@ -3035,7 +3035,7 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		"overlay_protocol": basetypes.ObjectType{
 			AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
 		},
-		"route_leaking_2": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking2Value{}.AttributeTypes(ctx),
 		},
 		"spines": basetypes.ObjectType{
@@ -3067,7 +3067,7 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"inter_switch_links": interSwitchLinks,
 			"leafs":              leafs,
 			"overlay_protocol":   overlayProtocol,
-			"route_leaking_2":    routeLeaking2,
+			"route_leaking":      routeLeaking2,
 			"spines":             spines,
 			"super_spines":       superSpines,
 			"system_pool_ipv4":   v.SystemPoolIpv4,
@@ -3165,7 +3165,7 @@ func (v SpecValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"overlay_protocol": basetypes.ObjectType{
 			AttrTypes: OverlayProtocolValue{}.AttributeTypes(ctx),
 		},
-		"route_leaking_2": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking2Value{}.AttributeTypes(ctx),
 		},
 		"spines": basetypes.ObjectType{
@@ -5319,7 +5319,7 @@ func (t LeafsType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue
 			fmt.Sprintf(`leaf_node_selector expected to be basetypes.ListValue, was: %T`, leafNodeSelectorAttribute))
 	}
 
-	routeLeaking1Attribute, ok := attributes["route_leaking_1"]
+	routeLeaking1Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -5486,7 +5486,7 @@ func NewLeafsValue(attributeTypes map[string]attr.Type, attributes map[string]at
 			fmt.Sprintf(`leaf_node_selector expected to be basetypes.ListValue, was: %T`, leafNodeSelectorAttribute))
 	}
 
-	routeLeaking1Attribute, ok := attributes["route_leaking_1"]
+	routeLeaking1Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -5624,7 +5624,7 @@ var _ basetypes.ObjectValuable = LeafsValue{}
 type LeafsValue struct {
 	AsnPool          basetypes.StringValue `tfsdk:"asn_pool"`
 	LeafNodeSelector basetypes.ListValue   `tfsdk:"leaf_node_selector"`
-	RouteLeaking1    basetypes.ObjectValue `tfsdk:"route_leaking_1"`
+	RouteLeaking1    basetypes.ObjectValue `tfsdk:"route_leaking"`
 	SystemPoolIpv4   basetypes.StringValue `tfsdk:"system_pool_ipv4"`
 	SystemPoolIpv6   basetypes.StringValue `tfsdk:"system_pool_ipv6"`
 	state            attr.ValueState
@@ -5640,7 +5640,7 @@ func (v LeafsValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error)
 	attrTypes["leaf_node_selector"] = basetypes.ListType{
 		ElemType: types.StringType,
 	}.TerraformType(ctx)
-	attrTypes["route_leaking_1"] = basetypes.ObjectType{
+	attrTypes["route_leaking"] = basetypes.ObjectType{
 		AttrTypes: RouteLeaking1Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["system_pool_ipv4"] = basetypes.StringType{}.TerraformType(ctx)
@@ -5674,7 +5674,7 @@ func (v LeafsValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error)
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["route_leaking_1"] = val
+		vals["route_leaking"] = val
 
 		val, err = v.SystemPoolIpv4.ToTerraformValue(ctx)
 
@@ -5760,7 +5760,7 @@ func (v LeafsValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, d
 			"leaf_node_selector": basetypes.ListType{
 				ElemType: types.StringType,
 			},
-			"route_leaking_1": basetypes.ObjectType{
+			"route_leaking": basetypes.ObjectType{
 				AttrTypes: RouteLeaking1Value{}.AttributeTypes(ctx),
 			},
 			"system_pool_ipv4": basetypes.StringType{},
@@ -5773,7 +5773,7 @@ func (v LeafsValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, d
 		"leaf_node_selector": basetypes.ListType{
 			ElemType: types.StringType,
 		},
-		"route_leaking_1": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking1Value{}.AttributeTypes(ctx),
 		},
 		"system_pool_ipv4": basetypes.StringType{},
@@ -5793,7 +5793,7 @@ func (v LeafsValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, d
 		map[string]attr.Value{
 			"asn_pool":           v.AsnPool,
 			"leaf_node_selector": leafNodeSelectorVal,
-			"route_leaking_1":    routeLeaking1,
+			"route_leaking":      routeLeaking1,
 			"system_pool_ipv4":   v.SystemPoolIpv4,
 			"system_pool_ipv6":   v.SystemPoolIpv6,
 		})
@@ -5853,7 +5853,7 @@ func (v LeafsValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"leaf_node_selector": basetypes.ListType{
 			ElemType: types.StringType,
 		},
-		"route_leaking_1": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking1Value{}.AttributeTypes(ctx),
 		},
 		"system_pool_ipv4": basetypes.StringType{},
@@ -7460,22 +7460,22 @@ func (t BgpType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) 
 			fmt.Sprintf(`rr_client_node_selector expected to be basetypes.ListValue, was: %T`, rrClientNodeSelectorAttribute))
 	}
 
-	rrIpaddressesAttribute, ok := attributes["rr_ipaddresses"]
+	rrIpAddressesAttribute, ok := attributes["rr_ip_addresses"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`rr_ipaddresses is missing from object`)
+			`rr_ip_addresses is missing from object`)
 
 		return nil, diags
 	}
 
-	rrIpaddressesVal, ok := rrIpaddressesAttribute.(basetypes.ListValue)
+	rrIpAddressesVal, ok := rrIpAddressesAttribute.(basetypes.ListValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`rr_ipaddresses expected to be basetypes.ListValue, was: %T`, rrIpaddressesAttribute))
+			fmt.Sprintf(`rr_ip_addresses expected to be basetypes.ListValue, was: %T`, rrIpAddressesAttribute))
 	}
 
 	rrNodeSelectorAttribute, ok := attributes["rr_node_selector"]
@@ -7525,7 +7525,7 @@ func (t BgpType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) 
 		ImportPolicy:         importPolicyVal,
 		Keychain:             keychainVal,
 		RrClientNodeSelector: rrClientNodeSelectorVal,
-		RrIpaddresses:        rrIpaddressesVal,
+		RrIpAddresses:        rrIpAddressesVal,
 		RrNodeSelector:       rrNodeSelectorVal,
 		Timers:               timersVal,
 		state:                attr.ValueStateKnown,
@@ -7703,22 +7703,22 @@ func NewBgpValue(attributeTypes map[string]attr.Type, attributes map[string]attr
 			fmt.Sprintf(`rr_client_node_selector expected to be basetypes.ListValue, was: %T`, rrClientNodeSelectorAttribute))
 	}
 
-	rrIpaddressesAttribute, ok := attributes["rr_ipaddresses"]
+	rrIpAddressesAttribute, ok := attributes["rr_ip_addresses"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`rr_ipaddresses is missing from object`)
+			`rr_ip_addresses is missing from object`)
 
 		return NewBgpValueUnknown(), diags
 	}
 
-	rrIpaddressesVal, ok := rrIpaddressesAttribute.(basetypes.ListValue)
+	rrIpAddressesVal, ok := rrIpAddressesAttribute.(basetypes.ListValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`rr_ipaddresses expected to be basetypes.ListValue, was: %T`, rrIpaddressesAttribute))
+			fmt.Sprintf(`rr_ip_addresses expected to be basetypes.ListValue, was: %T`, rrIpAddressesAttribute))
 	}
 
 	rrNodeSelectorAttribute, ok := attributes["rr_node_selector"]
@@ -7768,7 +7768,7 @@ func NewBgpValue(attributeTypes map[string]attr.Type, attributes map[string]attr
 		ImportPolicy:         importPolicyVal,
 		Keychain:             keychainVal,
 		RrClientNodeSelector: rrClientNodeSelectorVal,
-		RrIpaddresses:        rrIpaddressesVal,
+		RrIpAddresses:        rrIpAddressesVal,
 		RrNodeSelector:       rrNodeSelectorVal,
 		Timers:               timersVal,
 		state:                attr.ValueStateKnown,
@@ -7849,7 +7849,7 @@ type BgpValue struct {
 	ImportPolicy         basetypes.ListValue   `tfsdk:"import_policy"`
 	Keychain             basetypes.StringValue `tfsdk:"keychain"`
 	RrClientNodeSelector basetypes.ListValue   `tfsdk:"rr_client_node_selector"`
-	RrIpaddresses        basetypes.ListValue   `tfsdk:"rr_ipaddresses"`
+	RrIpAddresses        basetypes.ListValue   `tfsdk:"rr_ip_addresses"`
 	RrNodeSelector       basetypes.ListValue   `tfsdk:"rr_node_selector"`
 	Timers               basetypes.ObjectValue `tfsdk:"timers"`
 	state                attr.ValueState
@@ -7873,7 +7873,7 @@ func (v BgpValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
 	attrTypes["rr_client_node_selector"] = basetypes.ListType{
 		ElemType: types.StringType,
 	}.TerraformType(ctx)
-	attrTypes["rr_ipaddresses"] = basetypes.ListType{
+	attrTypes["rr_ip_addresses"] = basetypes.ListType{
 		ElemType: types.StringType,
 	}.TerraformType(ctx)
 	attrTypes["rr_node_selector"] = basetypes.ListType{
@@ -7937,13 +7937,13 @@ func (v BgpValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
 
 		vals["rr_client_node_selector"] = val
 
-		val, err = v.RrIpaddresses.ToTerraformValue(ctx)
+		val, err = v.RrIpAddresses.ToTerraformValue(ctx)
 
 		if err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["rr_ipaddresses"] = val
+		vals["rr_ip_addresses"] = val
 
 		val, err = v.RrNodeSelector.ToTerraformValue(ctx)
 
@@ -8037,7 +8037,7 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 			"rr_client_node_selector": basetypes.ListType{
 				ElemType: types.StringType,
 			},
-			"rr_ipaddresses": basetypes.ListType{
+			"rr_ip_addresses": basetypes.ListType{
 				ElemType: types.StringType,
 			},
 			"rr_node_selector": basetypes.ListType{
@@ -8075,7 +8075,7 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 			"rr_client_node_selector": basetypes.ListType{
 				ElemType: types.StringType,
 			},
-			"rr_ipaddresses": basetypes.ListType{
+			"rr_ip_addresses": basetypes.ListType{
 				ElemType: types.StringType,
 			},
 			"rr_node_selector": basetypes.ListType{
@@ -8113,7 +8113,7 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 			"rr_client_node_selector": basetypes.ListType{
 				ElemType: types.StringType,
 			},
-			"rr_ipaddresses": basetypes.ListType{
+			"rr_ip_addresses": basetypes.ListType{
 				ElemType: types.StringType,
 			},
 			"rr_node_selector": basetypes.ListType{
@@ -8125,15 +8125,15 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 		}), diags
 	}
 
-	var rrIpaddressesVal basetypes.ListValue
+	var rrIpAddressesVal basetypes.ListValue
 	switch {
-	case v.RrIpaddresses.IsUnknown():
-		rrIpaddressesVal = types.ListUnknown(types.StringType)
-	case v.RrIpaddresses.IsNull():
-		rrIpaddressesVal = types.ListNull(types.StringType)
+	case v.RrIpAddresses.IsUnknown():
+		rrIpAddressesVal = types.ListUnknown(types.StringType)
+	case v.RrIpAddresses.IsNull():
+		rrIpAddressesVal = types.ListNull(types.StringType)
 	default:
 		var d diag.Diagnostics
-		rrIpaddressesVal, d = types.ListValue(types.StringType, v.RrIpaddresses.Elements())
+		rrIpAddressesVal, d = types.ListValue(types.StringType, v.RrIpAddresses.Elements())
 		diags.Append(d...)
 	}
 
@@ -8151,7 +8151,7 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 			"rr_client_node_selector": basetypes.ListType{
 				ElemType: types.StringType,
 			},
-			"rr_ipaddresses": basetypes.ListType{
+			"rr_ip_addresses": basetypes.ListType{
 				ElemType: types.StringType,
 			},
 			"rr_node_selector": basetypes.ListType{
@@ -8189,7 +8189,7 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 			"rr_client_node_selector": basetypes.ListType{
 				ElemType: types.StringType,
 			},
-			"rr_ipaddresses": basetypes.ListType{
+			"rr_ip_addresses": basetypes.ListType{
 				ElemType: types.StringType,
 			},
 			"rr_node_selector": basetypes.ListType{
@@ -8214,7 +8214,7 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 		"rr_client_node_selector": basetypes.ListType{
 			ElemType: types.StringType,
 		},
-		"rr_ipaddresses": basetypes.ListType{
+		"rr_ip_addresses": basetypes.ListType{
 			ElemType: types.StringType,
 		},
 		"rr_node_selector": basetypes.ListType{
@@ -8242,7 +8242,7 @@ func (v BgpValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, dia
 			"import_policy":           importPolicyVal,
 			"keychain":                v.Keychain,
 			"rr_client_node_selector": rrClientNodeSelectorVal,
-			"rr_ipaddresses":          rrIpaddressesVal,
+			"rr_ip_addresses":         rrIpAddressesVal,
 			"rr_node_selector":        rrNodeSelectorVal,
 			"timers":                  timers,
 		})
@@ -8289,7 +8289,7 @@ func (v BgpValue) Equal(o attr.Value) bool {
 		return false
 	}
 
-	if !v.RrIpaddresses.Equal(other.RrIpaddresses) {
+	if !v.RrIpAddresses.Equal(other.RrIpAddresses) {
 		return false
 	}
 
@@ -8326,7 +8326,7 @@ func (v BgpValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"rr_client_node_selector": basetypes.ListType{
 			ElemType: types.StringType,
 		},
-		"rr_ipaddresses": basetypes.ListType{
+		"rr_ip_addresses": basetypes.ListType{
 			ElemType: types.StringType,
 		},
 		"rr_node_selector": basetypes.ListType{
@@ -9249,7 +9249,7 @@ func (t SpinesType) ValueFromObject(ctx context.Context, in basetypes.ObjectValu
 			fmt.Sprintf(`asn_pool expected to be basetypes.StringValue, was: %T`, asnPoolAttribute))
 	}
 
-	routeLeaking3Attribute, ok := attributes["route_leaking_3"]
+	routeLeaking3Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -9416,7 +9416,7 @@ func NewSpinesValue(attributeTypes map[string]attr.Type, attributes map[string]a
 			fmt.Sprintf(`asn_pool expected to be basetypes.StringValue, was: %T`, asnPoolAttribute))
 	}
 
-	routeLeaking3Attribute, ok := attributes["route_leaking_3"]
+	routeLeaking3Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -9571,7 +9571,7 @@ var _ basetypes.ObjectValuable = SpinesValue{}
 
 type SpinesValue struct {
 	AsnPool           basetypes.StringValue `tfsdk:"asn_pool"`
-	RouteLeaking3     basetypes.ObjectValue `tfsdk:"route_leaking_3"`
+	RouteLeaking3     basetypes.ObjectValue `tfsdk:"route_leaking"`
 	SpineNodeSelector basetypes.ListValue   `tfsdk:"spine_node_selector"`
 	SystemPoolIpv4    basetypes.StringValue `tfsdk:"system_pool_ipv4"`
 	SystemPoolIpv6    basetypes.StringValue `tfsdk:"system_pool_ipv6"`
@@ -9585,7 +9585,7 @@ func (v SpinesValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error
 	var err error
 
 	attrTypes["asn_pool"] = basetypes.StringType{}.TerraformType(ctx)
-	attrTypes["route_leaking_3"] = basetypes.ObjectType{
+	attrTypes["route_leaking"] = basetypes.ObjectType{
 		AttrTypes: RouteLeaking3Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["spine_node_selector"] = basetypes.ListType{
@@ -9614,7 +9614,7 @@ func (v SpinesValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["route_leaking_3"] = val
+		vals["route_leaking"] = val
 
 		val, err = v.SpineNodeSelector.ToTerraformValue(ctx)
 
@@ -9705,7 +9705,7 @@ func (v SpinesValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, 
 	if diags.HasError() {
 		return types.ObjectUnknown(map[string]attr.Type{
 			"asn_pool": basetypes.StringType{},
-			"route_leaking_3": basetypes.ObjectType{
+			"route_leaking": basetypes.ObjectType{
 				AttrTypes: RouteLeaking3Value{}.AttributeTypes(ctx),
 			},
 			"spine_node_selector": basetypes.ListType{
@@ -9718,7 +9718,7 @@ func (v SpinesValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, 
 
 	attributeTypes := map[string]attr.Type{
 		"asn_pool": basetypes.StringType{},
-		"route_leaking_3": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking3Value{}.AttributeTypes(ctx),
 		},
 		"spine_node_selector": basetypes.ListType{
@@ -9740,7 +9740,7 @@ func (v SpinesValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, 
 		attributeTypes,
 		map[string]attr.Value{
 			"asn_pool":            v.AsnPool,
-			"route_leaking_3":     routeLeaking3,
+			"route_leaking":       routeLeaking3,
 			"spine_node_selector": spineNodeSelectorVal,
 			"system_pool_ipv4":    v.SystemPoolIpv4,
 			"system_pool_ipv6":    v.SystemPoolIpv6,
@@ -9798,7 +9798,7 @@ func (v SpinesValue) Type(ctx context.Context) attr.Type {
 func (v SpinesValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	return map[string]attr.Type{
 		"asn_pool": basetypes.StringType{},
-		"route_leaking_3": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking3Value{}.AttributeTypes(ctx),
 		},
 		"spine_node_selector": basetypes.ListType{
@@ -10231,7 +10231,7 @@ func (t SuperSpinesType) ValueFromObject(ctx context.Context, in basetypes.Objec
 			fmt.Sprintf(`asn_pool expected to be basetypes.StringValue, was: %T`, asnPoolAttribute))
 	}
 
-	routeLeaking4Attribute, ok := attributes["route_leaking_4"]
+	routeLeaking4Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -10398,7 +10398,7 @@ func NewSuperSpinesValue(attributeTypes map[string]attr.Type, attributes map[str
 			fmt.Sprintf(`asn_pool expected to be basetypes.StringValue, was: %T`, asnPoolAttribute))
 	}
 
-	routeLeaking4Attribute, ok := attributes["route_leaking_4"]
+	routeLeaking4Attribute, ok := attributes["route_leaking"]
 
 	if !ok {
 		diags.AddError(
@@ -10553,7 +10553,7 @@ var _ basetypes.ObjectValuable = SuperSpinesValue{}
 
 type SuperSpinesValue struct {
 	AsnPool                basetypes.StringValue `tfsdk:"asn_pool"`
-	RouteLeaking4          basetypes.ObjectValue `tfsdk:"route_leaking_4"`
+	RouteLeaking4          basetypes.ObjectValue `tfsdk:"route_leaking"`
 	SuperSpineNodeSelector basetypes.ListValue   `tfsdk:"super_spine_node_selector"`
 	SystemPoolIpv4         basetypes.StringValue `tfsdk:"system_pool_ipv4"`
 	SystemPoolIpv6         basetypes.StringValue `tfsdk:"system_pool_ipv6"`
@@ -10567,7 +10567,7 @@ func (v SuperSpinesValue) ToTerraformValue(ctx context.Context) (tftypes.Value, 
 	var err error
 
 	attrTypes["asn_pool"] = basetypes.StringType{}.TerraformType(ctx)
-	attrTypes["route_leaking_4"] = basetypes.ObjectType{
+	attrTypes["route_leaking"] = basetypes.ObjectType{
 		AttrTypes: RouteLeaking4Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["super_spine_node_selector"] = basetypes.ListType{
@@ -10596,7 +10596,7 @@ func (v SuperSpinesValue) ToTerraformValue(ctx context.Context) (tftypes.Value, 
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["route_leaking_4"] = val
+		vals["route_leaking"] = val
 
 		val, err = v.SuperSpineNodeSelector.ToTerraformValue(ctx)
 
@@ -10687,7 +10687,7 @@ func (v SuperSpinesValue) ToObjectValue(ctx context.Context) (basetypes.ObjectVa
 	if diags.HasError() {
 		return types.ObjectUnknown(map[string]attr.Type{
 			"asn_pool": basetypes.StringType{},
-			"route_leaking_4": basetypes.ObjectType{
+			"route_leaking": basetypes.ObjectType{
 				AttrTypes: RouteLeaking4Value{}.AttributeTypes(ctx),
 			},
 			"super_spine_node_selector": basetypes.ListType{
@@ -10700,7 +10700,7 @@ func (v SuperSpinesValue) ToObjectValue(ctx context.Context) (basetypes.ObjectVa
 
 	attributeTypes := map[string]attr.Type{
 		"asn_pool": basetypes.StringType{},
-		"route_leaking_4": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking4Value{}.AttributeTypes(ctx),
 		},
 		"super_spine_node_selector": basetypes.ListType{
@@ -10722,7 +10722,7 @@ func (v SuperSpinesValue) ToObjectValue(ctx context.Context) (basetypes.ObjectVa
 		attributeTypes,
 		map[string]attr.Value{
 			"asn_pool":                  v.AsnPool,
-			"route_leaking_4":           routeLeaking4,
+			"route_leaking":             routeLeaking4,
 			"super_spine_node_selector": superSpineNodeSelectorVal,
 			"system_pool_ipv4":          v.SystemPoolIpv4,
 			"system_pool_ipv6":          v.SystemPoolIpv6,
@@ -10780,7 +10780,7 @@ func (v SuperSpinesValue) Type(ctx context.Context) attr.Type {
 func (v SuperSpinesValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	return map[string]attr.Type{
 		"asn_pool": basetypes.StringType{},
-		"route_leaking_4": basetypes.ObjectType{
+		"route_leaking": basetypes.ObjectType{
 			AttrTypes: RouteLeaking4Value{}.AttributeTypes(ctx),
 		},
 		"super_spine_node_selector": basetypes.ListType{
@@ -11195,7 +11195,7 @@ func (t UnderlayProtocolType) ValueFromObject(ctx context.Context, in basetypes.
 
 	attributes := in.Attributes()
 
-	bfd1Attribute, ok := attributes["bfd_1"]
+	bfd1Attribute, ok := attributes["bfd"]
 
 	if !ok {
 		diags.AddError(
@@ -11213,7 +11213,7 @@ func (t UnderlayProtocolType) ValueFromObject(ctx context.Context, in basetypes.
 			fmt.Sprintf(`bfd_1 expected to be basetypes.ObjectValue, was: %T`, bfd1Attribute))
 	}
 
-	bgp1Attribute, ok := attributes["bgp_1"]
+	bgp1Attribute, ok := attributes["bgp"]
 
 	if !ok {
 		diags.AddError(
@@ -11324,7 +11324,7 @@ func NewUnderlayProtocolValue(attributeTypes map[string]attr.Type, attributes ma
 		return NewUnderlayProtocolValueUnknown(), diags
 	}
 
-	bfd1Attribute, ok := attributes["bfd_1"]
+	bfd1Attribute, ok := attributes["bfd"]
 
 	if !ok {
 		diags.AddError(
@@ -11342,7 +11342,7 @@ func NewUnderlayProtocolValue(attributeTypes map[string]attr.Type, attributes ma
 			fmt.Sprintf(`bfd_1 expected to be basetypes.ObjectValue, was: %T`, bfd1Attribute))
 	}
 
-	bgp1Attribute, ok := attributes["bgp_1"]
+	bgp1Attribute, ok := attributes["bgp"]
 
 	if !ok {
 		diags.AddError(
@@ -11458,8 +11458,8 @@ func (t UnderlayProtocolType) ValueType(ctx context.Context) attr.Value {
 var _ basetypes.ObjectValuable = UnderlayProtocolValue{}
 
 type UnderlayProtocolValue struct {
-	Bfd1     basetypes.ObjectValue `tfsdk:"bfd_1"`
-	Bgp1     basetypes.ObjectValue `tfsdk:"bgp_1"`
+	Bfd1     basetypes.ObjectValue `tfsdk:"bfd"`
+	Bgp1     basetypes.ObjectValue `tfsdk:"bgp"`
 	Protocol basetypes.ListValue   `tfsdk:"protocol"`
 	state    attr.ValueState
 }
@@ -11470,10 +11470,10 @@ func (v UnderlayProtocolValue) ToTerraformValue(ctx context.Context) (tftypes.Va
 	var val tftypes.Value
 	var err error
 
-	attrTypes["bfd_1"] = basetypes.ObjectType{
+	attrTypes["bfd"] = basetypes.ObjectType{
 		AttrTypes: Bfd1Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
-	attrTypes["bgp_1"] = basetypes.ObjectType{
+	attrTypes["bgp"] = basetypes.ObjectType{
 		AttrTypes: Bgp1Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 	attrTypes["protocol"] = basetypes.ListType{
@@ -11492,7 +11492,7 @@ func (v UnderlayProtocolValue) ToTerraformValue(ctx context.Context) (tftypes.Va
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["bfd_1"] = val
+		vals["bfd"] = val
 
 		val, err = v.Bgp1.ToTerraformValue(ctx)
 
@@ -11500,7 +11500,7 @@ func (v UnderlayProtocolValue) ToTerraformValue(ctx context.Context) (tftypes.Va
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["bgp_1"] = val
+		vals["bgp"] = val
 
 		val, err = v.Protocol.ToTerraformValue(ctx)
 
@@ -11595,10 +11595,10 @@ func (v UnderlayProtocolValue) ToObjectValue(ctx context.Context) (basetypes.Obj
 
 	if diags.HasError() {
 		return types.ObjectUnknown(map[string]attr.Type{
-			"bfd_1": basetypes.ObjectType{
+			"bfd": basetypes.ObjectType{
 				AttrTypes: Bfd1Value{}.AttributeTypes(ctx),
 			},
-			"bgp_1": basetypes.ObjectType{
+			"bgp": basetypes.ObjectType{
 				AttrTypes: Bgp1Value{}.AttributeTypes(ctx),
 			},
 			"protocol": basetypes.ListType{
@@ -11608,10 +11608,10 @@ func (v UnderlayProtocolValue) ToObjectValue(ctx context.Context) (basetypes.Obj
 	}
 
 	attributeTypes := map[string]attr.Type{
-		"bfd_1": basetypes.ObjectType{
+		"bfd": basetypes.ObjectType{
 			AttrTypes: Bfd1Value{}.AttributeTypes(ctx),
 		},
-		"bgp_1": basetypes.ObjectType{
+		"bgp": basetypes.ObjectType{
 			AttrTypes: Bgp1Value{}.AttributeTypes(ctx),
 		},
 		"protocol": basetypes.ListType{
@@ -11630,8 +11630,8 @@ func (v UnderlayProtocolValue) ToObjectValue(ctx context.Context) (basetypes.Obj
 	objVal, diags := types.ObjectValue(
 		attributeTypes,
 		map[string]attr.Value{
-			"bfd_1":    bfd1,
-			"bgp_1":    bgp1,
+			"bfd":      bfd1,
+			"bgp":      bgp1,
 			"protocol": protocolVal,
 		})
 
@@ -11678,10 +11678,10 @@ func (v UnderlayProtocolValue) Type(ctx context.Context) attr.Type {
 
 func (v UnderlayProtocolValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	return map[string]attr.Type{
-		"bfd_1": basetypes.ObjectType{
+		"bfd": basetypes.ObjectType{
 			AttrTypes: Bfd1Value{}.AttributeTypes(ctx),
 		},
-		"bgp_1": basetypes.ObjectType{
+		"bgp": basetypes.ObjectType{
 			AttrTypes: Bgp1Value{}.AttributeTypes(ctx),
 		},
 		"protocol": basetypes.ListType{
@@ -12386,7 +12386,7 @@ func (t Bgp1Type) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 			fmt.Sprintf(`keychain expected to be basetypes.StringValue, was: %T`, keychainAttribute))
 	}
 
-	timers1Attribute, ok := attributes["timers_1"]
+	timers1Attribute, ok := attributes["timers"]
 
 	if !ok {
 		diags.AddError(
@@ -12553,7 +12553,7 @@ func NewBgp1Value(attributeTypes map[string]attr.Type, attributes map[string]att
 			fmt.Sprintf(`keychain expected to be basetypes.StringValue, was: %T`, keychainAttribute))
 	}
 
-	timers1Attribute, ok := attributes["timers_1"]
+	timers1Attribute, ok := attributes["timers"]
 
 	if !ok {
 		diags.AddError(
@@ -12657,7 +12657,7 @@ type Bgp1Value struct {
 	ExportPolicy basetypes.ListValue   `tfsdk:"export_policy"`
 	ImportPolicy basetypes.ListValue   `tfsdk:"import_policy"`
 	Keychain     basetypes.StringValue `tfsdk:"keychain"`
-	Timers1      basetypes.ObjectValue `tfsdk:"timers_1"`
+	Timers1      basetypes.ObjectValue `tfsdk:"timers"`
 	state        attr.ValueState
 }
 
@@ -12675,7 +12675,7 @@ func (v Bgp1Value) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 		ElemType: types.StringType,
 	}.TerraformType(ctx)
 	attrTypes["keychain"] = basetypes.StringType{}.TerraformType(ctx)
-	attrTypes["timers_1"] = basetypes.ObjectType{
+	attrTypes["timers"] = basetypes.ObjectType{
 		AttrTypes: Timers1Value{}.AttributeTypes(ctx),
 	}.TerraformType(ctx)
 
@@ -12723,7 +12723,7 @@ func (v Bgp1Value) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["timers_1"] = val
+		vals["timers"] = val
 
 		if err := tftypes.ValidateValue(objectType, vals); err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
@@ -12797,7 +12797,7 @@ func (v Bgp1Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 				ElemType: types.StringType,
 			},
 			"keychain": basetypes.StringType{},
-			"timers_1": basetypes.ObjectType{
+			"timers": basetypes.ObjectType{
 				AttrTypes: Timers1Value{}.AttributeTypes(ctx),
 			},
 		}), diags
@@ -12825,7 +12825,7 @@ func (v Bgp1Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 				ElemType: types.StringType,
 			},
 			"keychain": basetypes.StringType{},
-			"timers_1": basetypes.ObjectType{
+			"timers": basetypes.ObjectType{
 				AttrTypes: Timers1Value{}.AttributeTypes(ctx),
 			},
 		}), diags
@@ -12840,7 +12840,7 @@ func (v Bgp1Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			ElemType: types.StringType,
 		},
 		"keychain": basetypes.StringType{},
-		"timers_1": basetypes.ObjectType{
+		"timers": basetypes.ObjectType{
 			AttrTypes: Timers1Value{}.AttributeTypes(ctx),
 		},
 	}
@@ -12860,7 +12860,7 @@ func (v Bgp1Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"export_policy": exportPolicyVal,
 			"import_policy": importPolicyVal,
 			"keychain":      v.Keychain,
-			"timers_1":      timers1,
+			"timers":        timers1,
 		})
 
 	return objVal, diags
@@ -12922,7 +12922,7 @@ func (v Bgp1Value) AttributeTypes(ctx context.Context) map[string]attr.Type {
 			ElemType: types.StringType,
 		},
 		"keychain": basetypes.StringType{},
-		"timers_1": basetypes.ObjectType{
+		"timers": basetypes.ObjectType{
 			AttrTypes: Timers1Value{}.AttributeTypes(ctx),
 		},
 	}

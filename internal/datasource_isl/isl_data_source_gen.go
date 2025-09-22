@@ -256,12 +256,12 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 								Description:         "Reference to the DefaulInterface assocaited with the local interface",
 								MarkdownDescription: "Reference to the DefaulInterface assocaited with the local interface",
 							},
-							"ipv4address": schema.StringAttribute{
+							"ipv4_address": schema.StringAttribute{
 								Computed:            true,
 								Description:         "Local Interface IPv4 address",
 								MarkdownDescription: "Local Interface IPv4 address",
 							},
-							"ipv6address": schema.StringAttribute{
+							"ipv6_address": schema.StringAttribute{
 								Computed:            true,
 								Description:         "Local Interface IPv4 address",
 								MarkdownDescription: "Local Interface IPv4 address",
@@ -293,12 +293,12 @@ func IslDataSourceSchema(ctx context.Context) schema.Schema {
 								Description:         "Reference to the DefaulInterface assocaited with the remote interface",
 								MarkdownDescription: "Reference to the DefaulInterface assocaited with the remote interface",
 							},
-							"ipv4address": schema.StringAttribute{
+							"ipv4_address": schema.StringAttribute{
 								Computed:            true,
 								Description:         "Remote Interface IPv4 address",
 								MarkdownDescription: "Remote Interface IPv4 address",
 							},
-							"ipv6address": schema.StringAttribute{
+							"ipv6_address": schema.StringAttribute{
 								Computed:            true,
 								Description:         "Remote Interface IPv6 address",
 								MarkdownDescription: "Remote Interface IPv6 address",
@@ -4398,40 +4398,40 @@ func (t LocalInterfaceType) ValueFromObject(ctx context.Context, in basetypes.Ob
 			fmt.Sprintf(`default_interface expected to be basetypes.StringValue, was: %T`, defaultInterfaceAttribute))
 	}
 
-	ipv4addressAttribute, ok := attributes["ipv4address"]
+	ipv4AddressAttribute, ok := attributes["ipv4_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv4address is missing from object`)
+			`ipv4_address is missing from object`)
 
 		return nil, diags
 	}
 
-	ipv4addressVal, ok := ipv4addressAttribute.(basetypes.StringValue)
+	ipv4AddressVal, ok := ipv4AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv4address expected to be basetypes.StringValue, was: %T`, ipv4addressAttribute))
+			fmt.Sprintf(`ipv4_address expected to be basetypes.StringValue, was: %T`, ipv4AddressAttribute))
 	}
 
-	ipv6addressAttribute, ok := attributes["ipv6address"]
+	ipv6AddressAttribute, ok := attributes["ipv6_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv6address is missing from object`)
+			`ipv6_address is missing from object`)
 
 		return nil, diags
 	}
 
-	ipv6addressVal, ok := ipv6addressAttribute.(basetypes.StringValue)
+	ipv6AddressVal, ok := ipv6AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv6address expected to be basetypes.StringValue, was: %T`, ipv6addressAttribute))
+			fmt.Sprintf(`ipv6_address expected to be basetypes.StringValue, was: %T`, ipv6AddressAttribute))
 	}
 
 	nodeAttribute, ok := attributes["node"]
@@ -4458,8 +4458,8 @@ func (t LocalInterfaceType) ValueFromObject(ctx context.Context, in basetypes.Ob
 
 	return LocalInterfaceValue{
 		DefaultInterface: defaultInterfaceVal,
-		Ipv4address:      ipv4addressVal,
-		Ipv6address:      ipv6addressVal,
+		Ipv4Address:      ipv4AddressVal,
+		Ipv6Address:      ipv6AddressVal,
 		Node:             nodeVal,
 		state:            attr.ValueStateKnown,
 	}, diags
@@ -4546,40 +4546,40 @@ func NewLocalInterfaceValue(attributeTypes map[string]attr.Type, attributes map[
 			fmt.Sprintf(`default_interface expected to be basetypes.StringValue, was: %T`, defaultInterfaceAttribute))
 	}
 
-	ipv4addressAttribute, ok := attributes["ipv4address"]
+	ipv4AddressAttribute, ok := attributes["ipv4_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv4address is missing from object`)
+			`ipv4_address is missing from object`)
 
 		return NewLocalInterfaceValueUnknown(), diags
 	}
 
-	ipv4addressVal, ok := ipv4addressAttribute.(basetypes.StringValue)
+	ipv4AddressVal, ok := ipv4AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv4address expected to be basetypes.StringValue, was: %T`, ipv4addressAttribute))
+			fmt.Sprintf(`ipv4_address expected to be basetypes.StringValue, was: %T`, ipv4AddressAttribute))
 	}
 
-	ipv6addressAttribute, ok := attributes["ipv6address"]
+	ipv6AddressAttribute, ok := attributes["ipv6_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv6address is missing from object`)
+			`ipv6_address is missing from object`)
 
 		return NewLocalInterfaceValueUnknown(), diags
 	}
 
-	ipv6addressVal, ok := ipv6addressAttribute.(basetypes.StringValue)
+	ipv6AddressVal, ok := ipv6AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv6address expected to be basetypes.StringValue, was: %T`, ipv6addressAttribute))
+			fmt.Sprintf(`ipv6_address expected to be basetypes.StringValue, was: %T`, ipv6AddressAttribute))
 	}
 
 	nodeAttribute, ok := attributes["node"]
@@ -4606,8 +4606,8 @@ func NewLocalInterfaceValue(attributeTypes map[string]attr.Type, attributes map[
 
 	return LocalInterfaceValue{
 		DefaultInterface: defaultInterfaceVal,
-		Ipv4address:      ipv4addressVal,
-		Ipv6address:      ipv6addressVal,
+		Ipv4Address:      ipv4AddressVal,
+		Ipv6Address:      ipv6AddressVal,
 		Node:             nodeVal,
 		state:            attr.ValueStateKnown,
 	}, diags
@@ -4682,8 +4682,8 @@ var _ basetypes.ObjectValuable = LocalInterfaceValue{}
 
 type LocalInterfaceValue struct {
 	DefaultInterface basetypes.StringValue `tfsdk:"default_interface"`
-	Ipv4address      basetypes.StringValue `tfsdk:"ipv4address"`
-	Ipv6address      basetypes.StringValue `tfsdk:"ipv6address"`
+	Ipv4Address      basetypes.StringValue `tfsdk:"ipv4_address"`
+	Ipv6Address      basetypes.StringValue `tfsdk:"ipv6_address"`
 	Node             basetypes.StringValue `tfsdk:"node"`
 	state            attr.ValueState
 }
@@ -4695,8 +4695,8 @@ func (v LocalInterfaceValue) ToTerraformValue(ctx context.Context) (tftypes.Valu
 	var err error
 
 	attrTypes["default_interface"] = basetypes.StringType{}.TerraformType(ctx)
-	attrTypes["ipv4address"] = basetypes.StringType{}.TerraformType(ctx)
-	attrTypes["ipv6address"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["ipv4_address"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["ipv6_address"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["node"] = basetypes.StringType{}.TerraformType(ctx)
 
 	objectType := tftypes.Object{AttributeTypes: attrTypes}
@@ -4713,21 +4713,21 @@ func (v LocalInterfaceValue) ToTerraformValue(ctx context.Context) (tftypes.Valu
 
 		vals["default_interface"] = val
 
-		val, err = v.Ipv4address.ToTerraformValue(ctx)
+		val, err = v.Ipv4Address.ToTerraformValue(ctx)
 
 		if err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["ipv4address"] = val
+		vals["ipv4_address"] = val
 
-		val, err = v.Ipv6address.ToTerraformValue(ctx)
+		val, err = v.Ipv6Address.ToTerraformValue(ctx)
 
 		if err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["ipv6address"] = val
+		vals["ipv6_address"] = val
 
 		val, err = v.Node.ToTerraformValue(ctx)
 
@@ -4768,8 +4768,8 @@ func (v LocalInterfaceValue) ToObjectValue(ctx context.Context) (basetypes.Objec
 
 	attributeTypes := map[string]attr.Type{
 		"default_interface": basetypes.StringType{},
-		"ipv4address":       basetypes.StringType{},
-		"ipv6address":       basetypes.StringType{},
+		"ipv4_address":      basetypes.StringType{},
+		"ipv6_address":      basetypes.StringType{},
 		"node":              basetypes.StringType{},
 	}
 
@@ -4785,8 +4785,8 @@ func (v LocalInterfaceValue) ToObjectValue(ctx context.Context) (basetypes.Objec
 		attributeTypes,
 		map[string]attr.Value{
 			"default_interface": v.DefaultInterface,
-			"ipv4address":       v.Ipv4address,
-			"ipv6address":       v.Ipv6address,
+			"ipv4_address":      v.Ipv4Address,
+			"ipv6_address":      v.Ipv6Address,
 			"node":              v.Node,
 		})
 
@@ -4812,11 +4812,11 @@ func (v LocalInterfaceValue) Equal(o attr.Value) bool {
 		return false
 	}
 
-	if !v.Ipv4address.Equal(other.Ipv4address) {
+	if !v.Ipv4Address.Equal(other.Ipv4Address) {
 		return false
 	}
 
-	if !v.Ipv6address.Equal(other.Ipv6address) {
+	if !v.Ipv6Address.Equal(other.Ipv6Address) {
 		return false
 	}
 
@@ -4838,8 +4838,8 @@ func (v LocalInterfaceValue) Type(ctx context.Context) attr.Type {
 func (v LocalInterfaceValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	return map[string]attr.Type{
 		"default_interface": basetypes.StringType{},
-		"ipv4address":       basetypes.StringType{},
-		"ipv6address":       basetypes.StringType{},
+		"ipv4_address":      basetypes.StringType{},
+		"ipv6_address":      basetypes.StringType{},
 		"node":              basetypes.StringType{},
 	}
 }
@@ -4887,40 +4887,40 @@ func (t RemoteInterfaceType) ValueFromObject(ctx context.Context, in basetypes.O
 			fmt.Sprintf(`default_interface expected to be basetypes.StringValue, was: %T`, defaultInterfaceAttribute))
 	}
 
-	ipv4addressAttribute, ok := attributes["ipv4address"]
+	ipv4AddressAttribute, ok := attributes["ipv4_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv4address is missing from object`)
+			`ipv4_address is missing from object`)
 
 		return nil, diags
 	}
 
-	ipv4addressVal, ok := ipv4addressAttribute.(basetypes.StringValue)
+	ipv4AddressVal, ok := ipv4AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv4address expected to be basetypes.StringValue, was: %T`, ipv4addressAttribute))
+			fmt.Sprintf(`ipv4_address expected to be basetypes.StringValue, was: %T`, ipv4AddressAttribute))
 	}
 
-	ipv6addressAttribute, ok := attributes["ipv6address"]
+	ipv6AddressAttribute, ok := attributes["ipv6_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv6address is missing from object`)
+			`ipv6_address is missing from object`)
 
 		return nil, diags
 	}
 
-	ipv6addressVal, ok := ipv6addressAttribute.(basetypes.StringValue)
+	ipv6AddressVal, ok := ipv6AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv6address expected to be basetypes.StringValue, was: %T`, ipv6addressAttribute))
+			fmt.Sprintf(`ipv6_address expected to be basetypes.StringValue, was: %T`, ipv6AddressAttribute))
 	}
 
 	nodeAttribute, ok := attributes["node"]
@@ -4947,8 +4947,8 @@ func (t RemoteInterfaceType) ValueFromObject(ctx context.Context, in basetypes.O
 
 	return RemoteInterfaceValue{
 		DefaultInterface: defaultInterfaceVal,
-		Ipv4address:      ipv4addressVal,
-		Ipv6address:      ipv6addressVal,
+		Ipv4Address:      ipv4AddressVal,
+		Ipv6Address:      ipv6AddressVal,
 		Node:             nodeVal,
 		state:            attr.ValueStateKnown,
 	}, diags
@@ -5035,40 +5035,40 @@ func NewRemoteInterfaceValue(attributeTypes map[string]attr.Type, attributes map
 			fmt.Sprintf(`default_interface expected to be basetypes.StringValue, was: %T`, defaultInterfaceAttribute))
 	}
 
-	ipv4addressAttribute, ok := attributes["ipv4address"]
+	ipv4AddressAttribute, ok := attributes["ipv4_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv4address is missing from object`)
+			`ipv4_address is missing from object`)
 
 		return NewRemoteInterfaceValueUnknown(), diags
 	}
 
-	ipv4addressVal, ok := ipv4addressAttribute.(basetypes.StringValue)
+	ipv4AddressVal, ok := ipv4AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv4address expected to be basetypes.StringValue, was: %T`, ipv4addressAttribute))
+			fmt.Sprintf(`ipv4_address expected to be basetypes.StringValue, was: %T`, ipv4AddressAttribute))
 	}
 
-	ipv6addressAttribute, ok := attributes["ipv6address"]
+	ipv6AddressAttribute, ok := attributes["ipv6_address"]
 
 	if !ok {
 		diags.AddError(
 			"Attribute Missing",
-			`ipv6address is missing from object`)
+			`ipv6_address is missing from object`)
 
 		return NewRemoteInterfaceValueUnknown(), diags
 	}
 
-	ipv6addressVal, ok := ipv6addressAttribute.(basetypes.StringValue)
+	ipv6AddressVal, ok := ipv6AddressAttribute.(basetypes.StringValue)
 
 	if !ok {
 		diags.AddError(
 			"Attribute Wrong Type",
-			fmt.Sprintf(`ipv6address expected to be basetypes.StringValue, was: %T`, ipv6addressAttribute))
+			fmt.Sprintf(`ipv6_address expected to be basetypes.StringValue, was: %T`, ipv6AddressAttribute))
 	}
 
 	nodeAttribute, ok := attributes["node"]
@@ -5095,8 +5095,8 @@ func NewRemoteInterfaceValue(attributeTypes map[string]attr.Type, attributes map
 
 	return RemoteInterfaceValue{
 		DefaultInterface: defaultInterfaceVal,
-		Ipv4address:      ipv4addressVal,
-		Ipv6address:      ipv6addressVal,
+		Ipv4Address:      ipv4AddressVal,
+		Ipv6Address:      ipv6AddressVal,
 		Node:             nodeVal,
 		state:            attr.ValueStateKnown,
 	}, diags
@@ -5171,8 +5171,8 @@ var _ basetypes.ObjectValuable = RemoteInterfaceValue{}
 
 type RemoteInterfaceValue struct {
 	DefaultInterface basetypes.StringValue `tfsdk:"default_interface"`
-	Ipv4address      basetypes.StringValue `tfsdk:"ipv4address"`
-	Ipv6address      basetypes.StringValue `tfsdk:"ipv6address"`
+	Ipv4Address      basetypes.StringValue `tfsdk:"ipv4_address"`
+	Ipv6Address      basetypes.StringValue `tfsdk:"ipv6_address"`
 	Node             basetypes.StringValue `tfsdk:"node"`
 	state            attr.ValueState
 }
@@ -5184,8 +5184,8 @@ func (v RemoteInterfaceValue) ToTerraformValue(ctx context.Context) (tftypes.Val
 	var err error
 
 	attrTypes["default_interface"] = basetypes.StringType{}.TerraformType(ctx)
-	attrTypes["ipv4address"] = basetypes.StringType{}.TerraformType(ctx)
-	attrTypes["ipv6address"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["ipv4_address"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["ipv6_address"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["node"] = basetypes.StringType{}.TerraformType(ctx)
 
 	objectType := tftypes.Object{AttributeTypes: attrTypes}
@@ -5202,21 +5202,21 @@ func (v RemoteInterfaceValue) ToTerraformValue(ctx context.Context) (tftypes.Val
 
 		vals["default_interface"] = val
 
-		val, err = v.Ipv4address.ToTerraformValue(ctx)
+		val, err = v.Ipv4Address.ToTerraformValue(ctx)
 
 		if err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["ipv4address"] = val
+		vals["ipv4_address"] = val
 
-		val, err = v.Ipv6address.ToTerraformValue(ctx)
+		val, err = v.Ipv6Address.ToTerraformValue(ctx)
 
 		if err != nil {
 			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
 		}
 
-		vals["ipv6address"] = val
+		vals["ipv6_address"] = val
 
 		val, err = v.Node.ToTerraformValue(ctx)
 
@@ -5257,8 +5257,8 @@ func (v RemoteInterfaceValue) ToObjectValue(ctx context.Context) (basetypes.Obje
 
 	attributeTypes := map[string]attr.Type{
 		"default_interface": basetypes.StringType{},
-		"ipv4address":       basetypes.StringType{},
-		"ipv6address":       basetypes.StringType{},
+		"ipv4_address":      basetypes.StringType{},
+		"ipv6_address":      basetypes.StringType{},
 		"node":              basetypes.StringType{},
 	}
 
@@ -5274,8 +5274,8 @@ func (v RemoteInterfaceValue) ToObjectValue(ctx context.Context) (basetypes.Obje
 		attributeTypes,
 		map[string]attr.Value{
 			"default_interface": v.DefaultInterface,
-			"ipv4address":       v.Ipv4address,
-			"ipv6address":       v.Ipv6address,
+			"ipv4_address":      v.Ipv4Address,
+			"ipv6_address":      v.Ipv6Address,
 			"node":              v.Node,
 		})
 
@@ -5301,11 +5301,11 @@ func (v RemoteInterfaceValue) Equal(o attr.Value) bool {
 		return false
 	}
 
-	if !v.Ipv4address.Equal(other.Ipv4address) {
+	if !v.Ipv4Address.Equal(other.Ipv4Address) {
 		return false
 	}
 
-	if !v.Ipv6address.Equal(other.Ipv6address) {
+	if !v.Ipv6Address.Equal(other.Ipv6Address) {
 		return false
 	}
 
@@ -5327,8 +5327,8 @@ func (v RemoteInterfaceValue) Type(ctx context.Context) attr.Type {
 func (v RemoteInterfaceValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 	return map[string]attr.Type{
 		"default_interface": basetypes.StringType{},
-		"ipv4address":       basetypes.StringType{},
-		"ipv6address":       basetypes.StringType{},
+		"ipv4_address":      basetypes.StringType{},
+		"ipv6_address":      basetypes.StringType{},
 		"node":              basetypes.StringType{},
 	}
 }
