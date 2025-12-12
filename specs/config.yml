@@ -75,3 +75,14 @@ resources:
     delete:
       path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
       method: DELETE
+
+  isl_ping:
+    create:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings
+      method: POST
+    read:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}
+      method: GET
+    delete:
+      path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}
+      method: DELETE

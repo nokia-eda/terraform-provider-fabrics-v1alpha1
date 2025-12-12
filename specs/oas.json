@@ -57,28 +57,56 @@
         "type": "object"
       },
       "ErrorResponse": {
-        "description": "Generic error response for REST APIs",
         "properties": {
+          "causeCollection": {
+            "description": "A lower-level set of structured errors.\n\nOnly oneOf `causeWrapped`, `causeSimple`, `causeCollection`, or `causeIndexedCollection` will ever be set.",
+            "items": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "type": "array"
+          },
+          "causeIndexedCollection": {
+            "description": "A lower-level set of structured errors.\nEach of these errors MUST have index set.\n\nOnly oneOf `causeWrapped`, `causeSimple`, `causeCollection`, or `causeIndexedCollection` will ever be set.",
+            "items": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "type": "array"
+          },
+          "causeIsInternal": {
+            "description": "If true, then the cause (`causeWrapped`, `causeSimple`, `causeCollection`, or `causeIndexedCollection`) should be hidden from the user.",
+            "type": "boolean"
+          },
+          "causeSimple": {
+            "description": "Simple string error type.\n\nOnly oneOf `causeWrapped`, `causeSimple`, `causeCollection`, or `causeIndexedCollection` will ever be set.",
+            "type": "string"
+          },
+          "causeWrapped": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
           "code": {
-            "description": "the numeric HTTP error code for the response.",
+            "deprecated": true,
+            "description": "the numeric HTTP error code for the response.\n\nDeprecated: Prefer to check the request's HTTP response code directly.",
             "format": "int64",
             "type": "integer"
           },
           "details": {
-            "description": "The optional details of the error response.",
+            "deprecated": true,
+            "description": "The optional details of the error response.\nDeprecated: Replaced by `causeSimple`.",
             "type": "string"
           },
           "dictionary": {
             "additionalProperties": true,
-            "description": "Dictionary/map of associated data/information relevant to the error.\nThe error \"message\" may contain {{name}} escapes that should be substituted\nwith information from this dictionary.",
+            "deprecated": true,
+            "description": "Dictionary/map of associated data/information relevant to the error.\nThe error \"message\" may contain {{name}} escapes that should be substituted\nwith information from this dictionary.\n\nDeprecated: Use \"values\" instead.",
             "type": "object"
           },
           "domain": {
-            "description": "The \"domain\" for the error.  If empty, it is an EDA\ncore error.  Alternatively it can be an EDA application\n\"apiVersion\" value (e.g. interfaces.eda.nokia.com/v1alpha1)\nindicating that the error is specific to that application.\nThe domain gives the receiver information that they can use\nto help them interpret the \"internal\" error code value, or\nto find an internationalization translation for the message.",
+            "description": "The \"domain\" for the error.  If empty, it is an EDA\ncore error.  Alternatively it can be an EDA application\n\"apiVersion\" value (e.g. interfaces.eda.nokia.com/v1alpha1)\nindicating that the error is specific to that application.\nThe domain gives the receiver information that they can use\nto help them interpret the \"type\" field.",
             "type": "string"
           },
           "errors": {
-            "description": "Collection of errors in cases where more than one exists. This needs to be\nflexible so we can support multiple formats",
+            "deprecated": true,
+            "description": "Collection of errors in cases where more than one exists.\nThis needs to be flexible so we can support multiple formats.\nDeprecated: Replaced by `causeCollection` or `causeIndexedCollection` instead.",
             "items": {
               "$ref": "#/components/schemas/ErrorItem"
             },
@@ -88,7 +116,8 @@
             "$ref": "#/components/schemas/ErrorIndex"
           },
           "internal": {
-            "description": "Internal error code in cases where we don't have an array of errors",
+            "deprecated": true,
+            "description": "Internal error code number.\n\nDeprecated: \"type\" \u0026 \"domain\" should be used instead to uniquely identify this error.",
             "format": "int64",
             "type": "integer"
           },
@@ -97,19 +126,45 @@
             "type": "string"
           },
           "ref": {
-            "description": "Reference to the error source. Should typically be the URI of the request",
+            "description": "Reference to the error source. Should typically be the URI of the request.",
             "type": "string"
           },
           "type": {
-            "description": "URI pointing at a document that describes the error and mitigation steps\nIf there is no document, point to the RFC for the HTTP error code",
+            "description": "Type defines a unique identifier for the error, within the domain.\nThis may be used (along with the domain) to find an internationalization translation for the message.\n\nSHOULD be a valid golang identifier, and SHOULD be in UpperCamelCase.",
             "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "object"
+            },
+            "description": "Associated data/information.\nThe error \"message\" may contain {{name}} escapes that should be substituted with information from this dictionary.\n\nNote that this map MUST NOT contain JSON objects (`{...}`) or arrays (`[...]`), only simple JSON types are permitted.",
+            "type": "object"
           }
         },
         "required": [
-          "code",
-          "message"
+          "internal",
+          "message",
+          "type"
         ],
+        "title": "Generic error response for REST APIs.",
         "type": "object"
+      },
+      "IntentTarget": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "IntentTargets": {
+        "items": {
+          "$ref": "#/components/schemas/IntentTarget"
+        },
+        "type": "array"
       },
       "K8SPatchOp": {
         "properties": {
@@ -135,8 +190,28 @@
         ],
         "type": "object"
       },
+      "K8STopologyRequest": {
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/TopoStateFilter"
+          },
+          "recurse": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "OverlayState": {
         "properties": {
+          "link_groups": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TopoOverlayLinkGroup"
+            },
+            "type": "object"
+          },
           "links": {
             "additionalProperties": {
               "$ref": "#/components/schemas/TopoOverlayLink"
@@ -146,6 +221,12 @@
           "nodes": {
             "additionalProperties": {
               "$ref": "#/components/schemas/TopoOverlayNode"
+            },
+            "type": "object"
+          },
+          "nodes_and_groups": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TopoOverlayNodeOrGroup"
             },
             "type": "object"
           }
@@ -295,6 +376,51 @@
         },
         "type": "object"
       },
+      "TopoAttribute": {
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TopoBoolExpression": {
+        "properties": {
+          "endpoint_expression": {
+            "$ref": "#/components/schemas/TopoEndpointBoolExpression"
+          },
+          "fixed_expression": {
+            "$ref": "#/components/schemas/TopoFixedBoolExpression"
+          },
+          "has_badge": {
+            "$ref": "#/components/schemas/TopoLiteralStatusOrBadge"
+          },
+          "label": {
+            "$ref": "#/components/schemas/TopoLabelSelector"
+          },
+          "literal": {
+            "$ref": "#/components/schemas/TopoBoolLiteral"
+          },
+          "logical": {
+            "$ref": "#/components/schemas/TopoLogicalExpression"
+          },
+          "not": {
+            "$ref": "#/components/schemas/TopoBoolExpression"
+          },
+          "value_expression": {
+            "$ref": "#/components/schemas/TopoValueExpression"
+          }
+        },
+        "type": "object"
+      },
+      "TopoBoolLiteral": {
+        "properties": {
+          "value": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
       "TopoElemMetadata": {
         "properties": {
           "attributes": {
@@ -315,16 +441,87 @@
         },
         "type": "object"
       },
-      "TopoLinkEndpoint": {
+      "TopoEndpointBoolExpression": {
         "properties": {
           "endpoint": {
             "type": "string"
           },
-          "node": {
+          "expression": {
+            "$ref": "#/components/schemas/TopoBoolExpression"
+          }
+        },
+        "type": "object"
+      },
+      "TopoField": {
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TopoFixedBoolExpression": {
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TopoLabelSelector": {
+        "properties": {
+          "selector": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "TopoLiteralStatusOrBadge": {
+        "properties": {
+          "overlay": {
             "type": "string"
           },
-          "node_key": {
+          "value": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "TopoLiteralValue": {
+        "properties": {
+          "badge": {
+            "$ref": "#/components/schemas/TopoLiteralStatusOrBadge"
+          },
+          "bool": {
+            "type": "boolean"
+          },
+          "number": {
+            "format": "double",
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TopoLiteralStatusOrBadge"
+          },
+          "string": {
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TopoLogicalExpression": {
+        "properties": {
+          "left": {
+            "$ref": "#/components/schemas/TopoBoolExpression"
+          },
+          "operation": {
+            "type": "string"
+          },
+          "right": {
+            "$ref": "#/components/schemas/TopoBoolExpression"
           }
         },
         "type": "object"
@@ -332,6 +529,9 @@
       "TopoNodeGrouping": {
         "properties": {
           "group": {
+            "type": "string"
+          },
+          "group_key": {
             "type": "string"
           },
           "tier": {
@@ -364,6 +564,12 @@
           "namespace": {
             "type": "string"
           },
+          "node": {
+            "type": "string"
+          },
+          "node_key": {
+            "type": "string"
+          },
           "overlays": {
             "additionalProperties": {
               "$ref": "#/components/schemas/TopoOverlayEndpointState"
@@ -372,10 +578,6 @@
           },
           "schema": {
             "$ref": "#/components/schemas/TopoSchema"
-          },
-          "state": {
-            "format": "int64",
-            "type": "integer"
           },
           "ui_name": {
             "type": "string"
@@ -404,16 +606,19 @@
             "type": "string"
           },
           "endpoint_a": {
-            "$ref": "#/components/schemas/TopoLinkEndpoint"
-          },
-          "endpoint_a_details": {
             "$ref": "#/components/schemas/TopoOverlayEndpoint"
+          },
+          "endpoint_a_name": {
+            "type": "string"
           },
           "endpoint_b": {
-            "$ref": "#/components/schemas/TopoLinkEndpoint"
-          },
-          "endpoint_b_details": {
             "$ref": "#/components/schemas/TopoOverlayEndpoint"
+          },
+          "endpoint_b_name": {
+            "type": "string"
+          },
+          "group_key": {
+            "type": "string"
           },
           "key": {
             "type": "string"
@@ -439,11 +644,38 @@
           "schema": {
             "$ref": "#/components/schemas/TopoSchema"
           },
-          "state": {
-            "format": "int64",
-            "type": "integer"
-          },
           "ui_name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TopoOverlayLinkGroup": {
+        "properties": {
+          "endpoint_a": {
+            "$ref": "#/components/schemas/TopoOverlayLinkGroupEndpoint"
+          },
+          "endpoint_b": {
+            "$ref": "#/components/schemas/TopoOverlayLinkGroupEndpoint"
+          },
+          "key": {
+            "type": "string"
+          },
+          "overlays": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TopoOverlayLinkState"
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "TopoOverlayLinkGroupEndpoint": {
+        "properties": {
+          "group_key": {
+            "type": "string"
+          },
+          "node_key": {
             "type": "string"
           }
         },
@@ -465,13 +697,6 @@
               "type": "object"
             },
             "type": "object"
-          },
-          "badges": {
-            "items": {
-              "format": "int64",
-              "type": "integer"
-            },
-            "type": "array"
           },
           "cr_name": {
             "type": "string"
@@ -503,9 +728,56 @@
           "schema": {
             "$ref": "#/components/schemas/TopoSchema"
           },
-          "state": {
+          "ui_name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TopoOverlayNodeOrGroup": {
+        "properties": {
+          "attributes": {
+            "additionalProperties": {
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "cr_name": {
+            "type": "string"
+          },
+          "grouping": {
+            "$ref": "#/components/schemas/TopoNodeGrouping"
+          },
+          "key": {
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "num_nodes": {
             "format": "int64",
             "type": "integer"
+          },
+          "overlays": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TopoOverlayNodeState"
+            },
+            "type": "object"
+          },
+          "schema": {
+            "$ref": "#/components/schemas/TopoSchema"
+          },
+          "type": {
+            "type": "string"
           },
           "ui_name": {
             "type": "string"
@@ -529,6 +801,14 @@
         },
         "type": "object"
       },
+      "TopoOverlayValue": {
+        "properties": {
+          "overlay": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "TopoSchema": {
         "properties": {
           "group": {
@@ -539,6 +819,69 @@
           },
           "version": {
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TopoStateFilter": {
+        "properties": {
+          "expand_all_link_groups": {
+            "type": "boolean"
+          },
+          "expand_all_node_groups": {
+            "type": "boolean"
+          },
+          "expanded_link_groups": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "expanded_node_groups": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "link_filter": {
+            "$ref": "#/components/schemas/TopoBoolExpression"
+          },
+          "node_filter": {
+            "$ref": "#/components/schemas/TopoBoolExpression"
+          }
+        },
+        "type": "object"
+      },
+      "TopoValue": {
+        "properties": {
+          "attribute": {
+            "$ref": "#/components/schemas/TopoAttribute"
+          },
+          "badge": {
+            "$ref": "#/components/schemas/TopoOverlayValue"
+          },
+          "field": {
+            "$ref": "#/components/schemas/TopoField"
+          },
+          "literal": {
+            "$ref": "#/components/schemas/TopoLiteralValue"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TopoOverlayValue"
+          }
+        },
+        "type": "object"
+      },
+      "TopoValueExpression": {
+        "properties": {
+          "left": {
+            "$ref": "#/components/schemas/TopoValue"
+          },
+          "operation": {
+            "type": "string"
+          },
+          "right": {
+            "$ref": "#/components/schemas/TopoValue"
           }
         },
         "type": "object"
@@ -616,16 +959,6 @@
         ],
         "type": "object"
       },
-      "WorkflowId": {
-        "properties": {
-          "id": {
-            "description": "A workflow identifier; these are assigned by the system to a posted workflow.",
-            "format": "int64",
-            "type": "integer"
-          }
-        },
-        "type": "object"
-      },
       "WorkflowIdentifier": {
         "properties": {
           "group": {
@@ -677,6 +1010,9 @@
       "com.nokia.eda.fabrics.v1alpha1.Fabric": {
         "description": "Fabric is the Schema for the fabrics API",
         "properties": {
+          "alarms": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric_alarms"
+          },
           "apiVersion": {
             "default": "fabrics.eda.nokia.com/v1alpha1",
             "pattern": "^fabrics\\.eda\\.nokia\\.com/v1alpha1$",
@@ -685,6 +1021,9 @@
               "ui-pattern-error": "The apiVersion must be set to fabrics.eda.nokia.com/v1alpha1",
               "ui-visible-if": "false"
             }
+          },
+          "deviations": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric_deviations"
           },
           "kind": {
             "default": "Fabric",
@@ -731,6 +1070,14 @@
                     "title": "Borderleaf Node Selector",
                     "type": "array",
                     "x-eda-nokia-com": {
+                      "ui-auto-completes": [
+                        {
+                          "condition": "true",
+                          "group": "core.eda.nokia.com",
+                          "kind": "TopoNode",
+                          "type": "labelselector"
+                        }
+                      ],
                       "ui-category": "NodeSelection",
                       "ui-column-span": 2,
                       "ui-order-priority": 1600,
@@ -738,7 +1085,7 @@
                     }
                   },
                   "routeLeaking": {
-                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
+                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
                     "properties": {
                       "exportPolicy": {
                         "description": "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
@@ -845,6 +1192,14 @@
                 "title": "Fabric Selector",
                 "type": "array",
                 "x-eda-nokia-com": {
+                  "ui-auto-completes": [
+                    {
+                      "condition": "true",
+                      "group": "fabrics.eda.nokia.com",
+                      "kind": "Fabric",
+                      "type": "labelselector"
+                    }
+                  ],
                   "ui-column-span": 2,
                   "ui-order-priority": 2000
                 }
@@ -871,6 +1226,14 @@
                     "title": "Link Selector",
                     "type": "array",
                     "x-eda-nokia-com": {
+                      "ui-auto-completes": [
+                        {
+                          "condition": "true",
+                          "group": "core.eda.nokia.com",
+                          "kind": "TopoLink",
+                          "type": "labelselector"
+                        }
+                      ],
                       "ui-column-span": 2
                     }
                   },
@@ -1023,6 +1386,14 @@
                     "title": "Leaf Node Selector",
                     "type": "array",
                     "x-eda-nokia-com": {
+                      "ui-auto-completes": [
+                        {
+                          "condition": "true",
+                          "group": "core.eda.nokia.com",
+                          "kind": "TopoNode",
+                          "type": "labelselector"
+                        }
+                      ],
                       "ui-category": "NodeSelection",
                       "ui-column-span": 2,
                       "ui-order-priority": 400,
@@ -1030,7 +1401,7 @@
                     }
                   },
                   "routeLeaking": {
-                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
+                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
                     "properties": {
                       "exportPolicy": {
                         "description": "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
@@ -1206,7 +1577,7 @@
                         }
                       },
                       "ttl": {
-                        "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
+                        "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
                         "maximum": 255,
                         "minimum": 2,
                         "title": "IP TTL/Hop Limit",
@@ -1319,6 +1690,14 @@
                         "title": "Route Reflector Client Node Selector",
                         "type": "array",
                         "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "kind": "DefaultRouteReflectorClient",
+                              "type": "labelselector"
+                            }
+                          ],
                           "ui-order-priority": 3400,
                           "ui-visible-if": "spec.overlayProtocol.protocol === \"IBGP\""
                         }
@@ -1344,6 +1723,14 @@
                         "title": "Route Reflector Node Selector",
                         "type": "array",
                         "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "kind": "DefaultRouteReflector",
+                              "type": "labelselector"
+                            }
+                          ],
                           "ui-order-priority": 3200,
                           "ui-visible-if": "spec.overlayProtocol.protocol === \"IBGP\""
                         }
@@ -1435,7 +1822,7 @@
                 }
               },
               "routeLeaking": {
-                "description": "Route leaking controlled by routing policies in and out of the DefaulRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
+                "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
                 "properties": {
                   "exportPolicy": {
                     "description": "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
@@ -1509,7 +1896,7 @@
                     }
                   },
                   "routeLeaking": {
-                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
+                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
                     "properties": {
                       "exportPolicy": {
                         "description": "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
@@ -1570,6 +1957,14 @@
                     "title": "Spine Node Selector",
                     "type": "array",
                     "x-eda-nokia-com": {
+                      "ui-auto-completes": [
+                        {
+                          "condition": "true",
+                          "group": "core.eda.nokia.com",
+                          "kind": "TopoNode",
+                          "type": "labelselector"
+                        }
+                      ],
                       "ui-category": "NodeSelection",
                       "ui-column-span": 2,
                       "ui-order-priority": 800,
@@ -1644,7 +2039,7 @@
                     }
                   },
                   "routeLeaking": {
-                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
+                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence.",
                     "properties": {
                       "exportPolicy": {
                         "description": "Reference to a Policy resource to use when evaluating route exports from the DefaultRouter.",
@@ -1705,6 +2100,14 @@
                     "title": "Superspine Node Selector",
                     "type": "array",
                     "x-eda-nokia-com": {
+                      "ui-auto-completes": [
+                        {
+                          "condition": "true",
+                          "group": "core.eda.nokia.com",
+                          "kind": "TopoNode",
+                          "type": "labelselector"
+                        }
+                      ],
                       "ui-category": "NodeSelection",
                       "ui-column-span": 2,
                       "ui-order-priority": 1200,
@@ -1875,7 +2278,7 @@
                         }
                       },
                       "ttl": {
-                        "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
+                        "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
                         "maximum": 255,
                         "minimum": 2,
                         "title": "IP TTL/Hop Limit",
@@ -2032,11 +2435,36 @@
                     "title": "BGP",
                     "type": "object"
                   },
+                  "ospf": {
+                    "description": "OSPF underlay properties.",
+                    "properties": {
+                      "addressFamily": {
+                        "description": "Selects enabled address families for OSPFv3. If not specified, both address families will be enabled by default when OSPFv3 underlay is configured.",
+                        "items": {
+                          "enum": [
+                            "IPV4-UNICAST",
+                            "IPV6-UNICAST"
+                          ],
+                          "type": "string"
+                        },
+                        "title": "OSPFv3 Address Family",
+                        "type": "array",
+                        "x-eda-nokia-com": {
+                          "ui-column-span": 2,
+                          "ui-order-priority": 1500
+                        }
+                      }
+                    },
+                    "title": "OSPF",
+                    "type": "object"
+                  },
                   "protocol": {
                     "description": "List of routing protocols to used between peers of an ISL.  Multiple protocols may be listed, if so multiple protocols will be used.",
                     "items": {
                       "enum": [
-                        "EBGP"
+                        "EBGP",
+                        "OSPFv2",
+                        "OSPFv3"
                       ],
                       "type": "string"
                     },
@@ -2050,7 +2478,6 @@
                   }
                 },
                 "required": [
-                  "bgp",
                   "protocol"
                 ],
                 "title": "Underlay Protocol",
@@ -2098,23 +2525,37 @@
                   "type": "object"
                 },
                 "title": "Border Leaf Nodes",
-                "type": "array"
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 700
+                }
               },
               "health": {
-                "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emited by the Fabric such as ISL, DefaultRouteReflectors etc.",
+                "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emitted by the Fabric such as ISL, DefaultRouteReflectors etc.",
                 "title": "Health",
-                "type": "integer"
+                "type": "integer",
+                "x-eda-nokia-com": {
+                  "ui-column-span": 2,
+                  "ui-order-priority": 200,
+                  "ui-single-line-group": "Health"
+                }
               },
               "healthScoreReason": {
                 "description": "Indicates the reason for the health score.",
                 "title": "Health Score Reason",
-                "type": "string"
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 300
+                }
               },
               "lastChange": {
                 "description": "The time when the state of the resource last changed.",
                 "format": "date-time",
                 "title": "Last Change",
-                "type": "string"
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 400
+                }
               },
               "leafNodes": {
                 "description": "List of leaf nodes in the Fabric.",
@@ -2145,12 +2586,20 @@
                   "type": "object"
                 },
                 "title": "Leaf Nodes",
-                "type": "array"
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 500
+                }
               },
               "operationalState": {
                 "description": "Operational state of the Fabric.  The operational state of the fabric is determined by monitoring the operational state of the following resources (if applicable): DefaultRouters, ISLs.",
                 "title": "Operational State",
-                "type": "string"
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-column-span": 2,
+                  "ui-order-priority": 100,
+                  "ui-single-line-group": "Health"
+                }
               },
               "spineNodes": {
                 "description": "List of spine nodes in the Fabric.",
@@ -2181,7 +2630,10 @@
                   "type": "object"
                 },
                 "title": "Spine Nodes",
-                "type": "array"
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 600
+                }
               },
               "superSpineNodes": {
                 "description": "List of super spine nodes in the Fabric.",
@@ -2212,7 +2664,10 @@
                   "type": "object"
                 },
                 "title": "Superspine Nodes",
-                "type": "array"
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 800
+                }
               }
             },
             "readOnly": true,
@@ -2229,7 +2684,26 @@
           "metadata",
           "spec"
         ],
-        "type": "object"
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-default-columns": [
+            ".metadata.name",
+            ".metadata.namespace",
+            ".metadata.labels",
+            ".metadata.annotations",
+            ".deviations.count",
+            ".status.operationalState",
+            ".status.health",
+            ".status.healthScoreReason",
+            ".status.lastChange",
+            ".spec.leafs.leafNodeSelector",
+            ".spec.spines.spineNodeSelector",
+            ".spec.superSpines.superSpineNodeSelector",
+            ".spec.borderLeafs.borderLeafNodeSelector",
+            ".spec.underlayProtocol.protocol",
+            ".spec.overlayProtocol.protocol"
+          ]
+        }
       },
       "com.nokia.eda.fabrics.v1alpha1.FabricList": {
         "description": "FabricList is a list of fabrics",
@@ -2306,6 +2780,73 @@
         },
         "type": "array"
       },
+      "com.nokia.eda.fabrics.v1alpha1.Fabric_alarms": {
+        "properties": {
+          "critical": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Critical",
+              "ui-title-key": "alarm_severities.critical"
+            }
+          },
+          "major": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Major",
+              "ui-title-key": "alarm_severities.major"
+            }
+          },
+          "minor": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "minor",
+              "ui-title-key": "alarm_severities.minor"
+            }
+          },
+          "warning": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Warning",
+              "ui-title-key": "alarm_severities.warning"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-order-priority": 40,
+          "ui-title": "Alarms",
+          "ui-title-key": "alarms"
+        }
+      },
+      "com.nokia.eda.fabrics.v1alpha1.Fabric_deviations": {
+        "properties": {
+          "count": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Count",
+              "ui-title-key": "count_column"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-order-priority": 25,
+          "ui-title": "Deviations",
+          "ui-title-key": "deviations"
+        }
+      },
       "com.nokia.eda.fabrics.v1alpha1.Fabric_metadata": {
         "properties": {
           "annotations": {
@@ -2375,6 +2916,9 @@
       "com.nokia.eda.fabrics.v1alpha1.ISL": {
         "description": "ISL is the Schema for the isls API",
         "properties": {
+          "alarms": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL_alarms"
+          },
           "apiVersion": {
             "default": "fabrics.eda.nokia.com/v1alpha1",
             "pattern": "^fabrics\\.eda\\.nokia\\.com/v1alpha1$",
@@ -2383,6 +2927,9 @@
               "ui-pattern-error": "The apiVersion must be set to fabrics.eda.nokia.com/v1alpha1",
               "ui-visible-if": "false"
             }
+          },
+          "deviations": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL_deviations"
           },
           "kind": {
             "default": "ISL",
@@ -2474,7 +3021,7 @@
                     }
                   },
                   "ttl": {
-                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
+                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
                     "maximum": 255,
                     "minimum": 2,
                     "title": "IP TTL/Hop Limit",
@@ -2582,6 +3129,242 @@
                 "description": "Reference to an Interface.",
                 "title": "Local Interface",
                 "type": "string"
+              },
+              "ospf": {
+                "description": "Enable or disable OSPF on the ISL.",
+                "properties": {
+                  "enabled": {
+                    "description": "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean",
+                    "title": "Enabled",
+                    "type": "boolean"
+                  },
+                  "ospfv2": {
+                    "description": "OSPFv2 Parameters.",
+                    "properties": {
+                      "localIPV4Area": {
+                        "description": "Reference to a IPV4 DefaultOSPFArea on the local interface.",
+                        "title": "Local IPV4 Area",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfareas",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "localIPV4Instance": {
+                        "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface.",
+                        "title": "Local IPV4 Instance",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfinstances",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "remoteIPV4Area": {
+                        "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
+                        "title": "Remote IPV4 Area",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfareas",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "remoteIPV4Instance": {
+                        "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
+                        "title": "Remote IPV4 Instance",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfinstances",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      }
+                    },
+                    "title": "OSPFv2",
+                    "type": "object"
+                  },
+                  "ospfv3": {
+                    "description": "OSPFv3 Parameters.",
+                    "properties": {
+                      "localIPV4Area": {
+                        "description": "Reference to a IPV4 DefaultOSPFArea on the local interface.",
+                        "title": "Local IPV4 Area",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfareas",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "localIPV4Instance": {
+                        "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface",
+                        "title": "Local IPV4 Instance",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfinstances",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "localIPV6Area": {
+                        "description": "Reference to a IPV6 DefaultOSPFArea on the local interface.",
+                        "title": "Local IPV6 Area",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfareas",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "localIPV6Instance": {
+                        "description": "Reference to a IPV6 DefaultOSPFInstance on the local interface.",
+                        "title": "Local IPV6 Instance",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfinstances",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "remoteIPV4Area": {
+                        "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
+                        "title": "Remote IPV4 Area",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfareas",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "remoteIPV4Instance": {
+                        "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
+                        "title": "Remote IPV4 Instance",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfinstances",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "remoteIPV6Area": {
+                        "description": "Reference to a IPV6 DefaultOSPFArea on the remote interface.",
+                        "title": "Remote IPV6 Area",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfareas",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      },
+                      "remoteIPV6Instance": {
+                        "description": "Reference to a IPV6 DefaultOSPFInstance on the remote interface.",
+                        "title": "Remote IPV6 Instance",
+                        "type": "string",
+                        "x-eda-nokia-com": {
+                          "ui-auto-completes": [
+                            {
+                              "condition": "true",
+                              "group": "protocols.eda.nokia.com",
+                              "resource": "defaultospfinstances",
+                              "type": "gvr",
+                              "version": "v1"
+                            }
+                          ],
+                          "ui-column-span": 2
+                        }
+                      }
+                    },
+                    "title": "OSPFv3",
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "enabled"
+                ],
+                "title": "OSPF",
+                "type": "object",
+                "x-eda-nokia-com": {
+                  "ui-presence-toggle": true
+                }
               },
               "poolIPV4": {
                 "description": "Reference to an IPv4 allocation pool to use for ISL subnet allocations.",
@@ -2691,7 +3474,9 @@
                 "title": "Health",
                 "type": "integer",
                 "x-eda-nokia-com": {
-                  "ui-visible-if": "false"
+                  "ui-column-span": 2,
+                  "ui-order-priority": 200,
+                  "ui-single-line-group": "Health"
                 }
               },
               "healthScoreReason": {
@@ -2699,14 +3484,17 @@
                 "title": "Health Score Reason",
                 "type": "string",
                 "x-eda-nokia-com": {
-                  "ui-visible-if": "false"
+                  "ui-order-priority": 300
                 }
               },
               "lastChange": {
                 "description": "The time when the state of the resource last changed",
                 "format": "date-time",
                 "title": "Last Change",
-                "type": "string"
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 400
+                }
               },
               "localInterface": {
                 "description": "Local Interface",
@@ -2722,7 +3510,7 @@
                     "type": "string"
                   },
                   "defaultInterface": {
-                    "description": "Reference to the DefaulInterface assocaited with the local interface",
+                    "description": "Reference to the DefaulInterface associated with the local interface",
                     "title": "Default Interface",
                     "type": "string"
                   },
@@ -2733,12 +3521,20 @@
                   }
                 },
                 "title": "Local Interface",
-                "type": "object"
+                "type": "object",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 500
+                }
               },
               "operationalState": {
                 "description": "Operational state of the ISL",
                 "title": "Operational State",
-                "type": "string"
+                "type": "string",
+                "x-eda-nokia-com": {
+                  "ui-column-span": 2,
+                  "ui-order-priority": 100,
+                  "ui-single-line-group": "Health"
+                }
               },
               "remoteInterface": {
                 "description": "Remote Interface",
@@ -2754,7 +3550,7 @@
                     "type": "string"
                   },
                   "defaultInterface": {
-                    "description": "Reference to the DefaulInterface assocaited with the remote interface",
+                    "description": "Reference to the DefaulInterface associated with the remote interface",
                     "title": "Default Interface",
                     "type": "string"
                   },
@@ -2765,7 +3561,10 @@
                   }
                 },
                 "title": "Remote Interface",
-                "type": "object"
+                "type": "object",
+                "x-eda-nokia-com": {
+                  "ui-order-priority": 600
+                }
               }
             },
             "readOnly": true,
@@ -2782,7 +3581,30 @@
           "metadata",
           "spec"
         ],
-        "type": "object"
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-default-columns": [
+            ".metadata.name",
+            ".metadata.namespace",
+            ".metadata.labels",
+            ".metadata.annotations",
+            ".deviations.count",
+            ".status.operationalState",
+            ".status.health",
+            ".status.healthScoreReason",
+            ".status.lastChange",
+            ".status.localInterface.defaultInterface",
+            ".status.localInterface.node",
+            ".status.localInterface.defaultInterface",
+            ".status.localInterface.IPv4Address",
+            ".status.localInterface.IPv6Address",
+            ".status.remoteInterface.defaultInterface",
+            ".status.remoteInterface.node",
+            ".status.remoteInterface.defaultInterface",
+            ".status.remoteInterface.IPv4Address",
+            ".status.remoteInterface.IPv6Address"
+          ]
+        }
       },
       "com.nokia.eda.fabrics.v1alpha1.ISLList": {
         "description": "ISLList is a list of isls",
@@ -2859,6 +3681,73 @@
         },
         "type": "array"
       },
+      "com.nokia.eda.fabrics.v1alpha1.ISL_alarms": {
+        "properties": {
+          "critical": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Critical",
+              "ui-title-key": "alarm_severities.critical"
+            }
+          },
+          "major": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Major",
+              "ui-title-key": "alarm_severities.major"
+            }
+          },
+          "minor": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "minor",
+              "ui-title-key": "alarm_severities.minor"
+            }
+          },
+          "warning": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Warning",
+              "ui-title-key": "alarm_severities.warning"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-order-priority": 40,
+          "ui-title": "Alarms",
+          "ui-title-key": "alarms"
+        }
+      },
+      "com.nokia.eda.fabrics.v1alpha1.ISL_deviations": {
+        "properties": {
+          "count": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Count",
+              "ui-title-key": "count_column"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-order-priority": 25,
+          "ui-title": "Deviations",
+          "ui-title-key": "deviations"
+        }
+      },
       "com.nokia.eda.fabrics.v1alpha1.ISL_metadata": {
         "properties": {
           "annotations": {
@@ -2928,6 +3817,9 @@
       "com.nokia.eda.fabrics.v1alpha1.IslPing": {
         "description": "IslPing is the Schema for the islpings API",
         "properties": {
+          "alarms": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPing_alarms"
+          },
           "apiVersion": {
             "default": "fabrics.eda.nokia.com/v1alpha1",
             "pattern": "^fabrics\\.eda\\.nokia\\.com/v1alpha1$",
@@ -2936,6 +3828,9 @@
               "ui-pattern-error": "The apiVersion must be set to fabrics.eda.nokia.com/v1alpha1",
               "ui-visible-if": "false"
             }
+          },
+          "deviations": {
+            "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPing_deviations"
           },
           "kind": {
             "default": "IslPing",
@@ -2965,7 +3860,17 @@
                   "type": "string"
                 },
                 "title": "Inter-Switch Link Selectors",
-                "type": "array"
+                "type": "array",
+                "x-eda-nokia-com": {
+                  "ui-auto-completes": [
+                    {
+                      "condition": "true",
+                      "group": "fabrics.eda.nokia.com",
+                      "kind": "ISL",
+                      "type": "labelselector"
+                    }
+                  ]
+                }
               },
               "isls": {
                 "description": "Inter-Switch Links is a list of named ISL resources to execute ISL pings for.",
@@ -3178,6 +4083,73 @@
         ],
         "type": "object"
       },
+      "com.nokia.eda.fabrics.v1alpha1.IslPing_alarms": {
+        "properties": {
+          "critical": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Critical",
+              "ui-title-key": "alarm_severities.critical"
+            }
+          },
+          "major": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Major",
+              "ui-title-key": "alarm_severities.major"
+            }
+          },
+          "minor": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "minor",
+              "ui-title-key": "alarm_severities.minor"
+            }
+          },
+          "warning": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Warning",
+              "ui-title-key": "alarm_severities.warning"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-order-priority": 40,
+          "ui-title": "Alarms",
+          "ui-title-key": "alarms"
+        }
+      },
+      "com.nokia.eda.fabrics.v1alpha1.IslPing_deviations": {
+        "properties": {
+          "count": {
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer",
+            "x-eda-nokia-com": {
+              "ui-title": "Count",
+              "ui-title-key": "count_column"
+            }
+          }
+        },
+        "readOnly": true,
+        "type": "object",
+        "x-eda-nokia-com": {
+          "ui-order-priority": 25,
+          "ui-title": "Deviations",
+          "ui-title-key": "deviations"
+        }
+      },
       "com.nokia.eda.fabrics.v1alpha1.IslPing_metadata": {
         "properties": {
           "annotations": {
@@ -3270,6 +4242,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/AppGroup"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppGroup"
+                }
               }
             },
             "description": "OK"
@@ -3298,6 +4275,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceList"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceList"
                 }
@@ -3340,6 +4322,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UIResult"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/UIResult"
                 }
@@ -3403,6 +4390,15 @@
           {
             "description": "a label selector string to filter the results based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
             "name": "label-selector",
             "schema": {
               "type": "string"
@@ -3413,6 +4409,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.FabricList"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.FabricList"
                 }
@@ -3477,6 +4478,15 @@
           {
             "description": "a label selector string to filter the results based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
             "name": "label-selector",
             "schema": {
               "type": "string"
@@ -3487,6 +4497,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISLList"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISLList"
                 }
@@ -3516,18 +4531,49 @@
         "operationId": "deleteAllFabricsEdaNokiaComV1alpha1NamespaceFabrics",
         "parameters": [
           {
-            "description": "the namespace scope from which to perform the delete",
-            "in": "path",
-            "name": "namespace",
-            "required": true,
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
             "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
               "type": "string"
             }
           },
           {
             "description": "a label selector string to filter the set of CRs deleted based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the set of CRs deleted based on CR labels",
+            "in": "query",
             "name": "label-selector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "the namespace scope from which to perform the delete",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -3537,6 +4583,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.FabricList"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.FabricList"
                 }
@@ -3599,6 +4650,15 @@
           {
             "description": "a label selector string to filter the results based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
             "name": "label-selector",
             "schema": {
               "type": "string"
@@ -3618,6 +4678,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.FabricList"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.FabricList"
                 }
@@ -3646,6 +4711,28 @@
         "operationId": "createFabricsEdaNokiaComV1alpha1NamespaceFabrics",
         "parameters": [
           {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "namespace",
             "required": true,
@@ -3668,6 +4755,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
                 }
@@ -3728,6 +4820,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric_DeletedResources"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric_DeletedResources"
+                }
               }
             },
             "description": "Returns list of deleted resource entries"
@@ -3755,6 +4852,28 @@
         "operationId": "deleteFabricsEdaNokiaComV1alpha1NamespaceFabrics",
         "parameters": [
           {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "description": "the namespace scope from which to perform the delete",
             "in": "path",
             "name": "namespace",
@@ -3777,6 +4896,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/Status"
                 }
@@ -3853,6 +4977,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
+                }
               }
             },
             "description": "OK"
@@ -3876,6 +5005,28 @@
         "description": "patch a Fabric",
         "operationId": "patchFabricsEdaNokiaComV1alpha1NamespaceFabrics",
         "parameters": [
+          {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
           {
             "in": "path",
             "name": "namespace",
@@ -3910,6 +5061,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
+                }
               }
             },
             "description": "OK"
@@ -3933,6 +5089,28 @@
         "description": "replace a Fabric",
         "operationId": "replaceFabricsEdaNokiaComV1alpha1NamespaceFabrics",
         "parameters": [
+          {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
           {
             "in": "path",
             "name": "namespace",
@@ -3964,6 +5142,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.Fabric"
                 }
@@ -4043,6 +5226,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/ResourceHistory"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceHistory"
+                }
               }
             },
             "description": "Returns the change history of the specified resource"
@@ -4064,8 +5252,82 @@
         ]
       }
     },
+    "/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_targets": {
+      "get": {
+        "operationId": "getTargetsFabricsEdaNokiaComV1alpha1NamespaceFabrics",
+        "parameters": [
+          {
+            "description": "name of the Fabric",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntentTargets"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntentTargets"
+                }
+              }
+            },
+            "description": "Returns the list of intent targets for the specified Fabric resource."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Get intent targets for the specified namespaced Fabric.",
+        "tags": [
+          "apps"
+        ]
+      }
+    },
     "/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_topology": {
       "get": {
+        "deprecated": true,
+        "description": "Get the topology for the specified namespaced Fabric.  This API is deprecated and the POST\nAPI should be used instead.",
         "operationId": "getTopologyFabricsEdaNokiaComV1alpha1NamespaceFabrics",
         "parameters": [
           {
@@ -4134,6 +5396,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/ResourceTopology"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceTopology"
+                }
               }
             },
             "description": "Returns the topology of the specified resource"
@@ -4149,7 +5416,87 @@
             "description": "Details of an error in response to an API REST request."
           }
         },
-        "summary": "Get the topology for the specified namespaced Fabric.",
+        "tags": [
+          "apps"
+        ]
+      },
+      "post": {
+        "operationId": "postTopologyFabricsEdaNokiaComV1alpha1NamespaceFabrics",
+        "parameters": [
+          {
+            "description": "name of the Fabric to retrieve",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope from which to retrieve the result",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/K8STopologyRequest"
+              }
+            }
+          },
+          "description": "the details of topology to retrieve",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceTopology"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceTopology"
+                }
+              }
+            },
+            "description": "Returns the topology of the specified resource"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Retrieve the topology for the specified namespaced Fabric.",
         "tags": [
           "apps"
         ]
@@ -4160,18 +5507,49 @@
         "operationId": "deleteAllFabricsEdaNokiaComV1alpha1NamespaceIsls",
         "parameters": [
           {
-            "description": "the namespace scope from which to perform the delete",
-            "in": "path",
-            "name": "namespace",
-            "required": true,
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
             "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
               "type": "string"
             }
           },
           {
             "description": "a label selector string to filter the set of CRs deleted based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the set of CRs deleted based on CR labels",
+            "in": "query",
             "name": "label-selector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "the namespace scope from which to perform the delete",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -4181,6 +5559,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISLList"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISLList"
                 }
@@ -4243,6 +5626,15 @@
           {
             "description": "a label selector string to filter the results based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
             "name": "label-selector",
             "schema": {
               "type": "string"
@@ -4262,6 +5654,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISLList"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISLList"
                 }
@@ -4290,6 +5687,28 @@
         "operationId": "createFabricsEdaNokiaComV1alpha1NamespaceIsls",
         "parameters": [
           {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "namespace",
             "required": true,
@@ -4312,6 +5731,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
                 }
@@ -4372,6 +5796,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL_DeletedResources"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL_DeletedResources"
+                }
               }
             },
             "description": "Returns list of deleted resource entries"
@@ -4399,6 +5828,28 @@
         "operationId": "deleteFabricsEdaNokiaComV1alpha1NamespaceIsls",
         "parameters": [
           {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
             "description": "the namespace scope from which to perform the delete",
             "in": "path",
             "name": "namespace",
@@ -4421,6 +5872,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/Status"
                 }
@@ -4497,6 +5953,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
+                }
               }
             },
             "description": "OK"
@@ -4520,6 +5981,28 @@
         "description": "patch a ISL",
         "operationId": "patchFabricsEdaNokiaComV1alpha1NamespaceIsls",
         "parameters": [
+          {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
           {
             "in": "path",
             "name": "namespace",
@@ -4554,6 +6037,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
+                }
               }
             },
             "description": "OK"
@@ -4577,6 +6065,28 @@
         "description": "replace a ISL",
         "operationId": "replaceFabricsEdaNokiaComV1alpha1NamespaceIsls",
         "parameters": [
+          {
+            "description": "The detail level to keep in the transaction log for the transaction resulting from this request.",
+            "in": "query",
+            "name": "detailLevel",
+            "schema": {
+              "default": "standard",
+              "enum": [
+                "standard",
+                "detailed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "If true, prevents the transaction resulting from this request from being bundled with others.",
+            "in": "query",
+            "name": "disableBatching",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
           {
             "in": "path",
             "name": "namespace",
@@ -4608,6 +6118,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.ISL"
                 }
@@ -4687,6 +6202,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/ResourceHistory"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceHistory"
+                }
               }
             },
             "description": "Returns the change history of the specified resource"
@@ -4708,8 +6228,82 @@
         ]
       }
     },
+    "/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_targets": {
+      "get": {
+        "operationId": "getTargetsFabricsEdaNokiaComV1alpha1NamespaceIsls",
+        "parameters": [
+          {
+            "description": "name of the ISL",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntentTargets"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntentTargets"
+                }
+              }
+            },
+            "description": "Returns the list of intent targets for the specified ISL resource."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Get intent targets for the specified namespaced ISL.",
+        "tags": [
+          "apps"
+        ]
+      }
+    },
     "/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_topology": {
       "get": {
+        "deprecated": true,
+        "description": "Get the topology for the specified namespaced ISL.  This API is deprecated and the POST\nAPI should be used instead.",
         "operationId": "getTopologyFabricsEdaNokiaComV1alpha1NamespaceIsls",
         "parameters": [
           {
@@ -4778,6 +6372,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/ResourceTopology"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceTopology"
+                }
               }
             },
             "description": "Returns the topology of the specified resource"
@@ -4793,7 +6392,87 @@
             "description": "Details of an error in response to an API REST request."
           }
         },
-        "summary": "Get the topology for the specified namespaced ISL.",
+        "tags": [
+          "apps"
+        ]
+      },
+      "post": {
+        "operationId": "postTopologyFabricsEdaNokiaComV1alpha1NamespaceIsls",
+        "parameters": [
+          {
+            "description": "name of the ISL to retrieve",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope from which to retrieve the result",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/K8STopologyRequest"
+              }
+            }
+          },
+          "description": "the details of topology to retrieve",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceTopology"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceTopology"
+                }
+              }
+            },
+            "description": "Returns the topology of the specified resource"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Retrieve the topology for the specified namespaced ISL.",
         "tags": [
           "apps"
         ]
@@ -4838,6 +6517,15 @@
           {
             "description": "a label selector string to filter the results based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
             "name": "label-selector",
             "schema": {
               "type": "string"
@@ -4851,9 +6539,14 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPingList"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPingList"
+                }
               }
             },
-            "description": "com.nokia.eda.fabrics.v1alpha1.IslPingList"
+            "description": "OK"
           },
           "default": {
             "content": {
@@ -4911,6 +6604,15 @@
           {
             "description": "a label selector string to filter the results based on CR labels",
             "in": "query",
+            "name": "labelSelector",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated: a label selector string to filter the results based on CR labels",
+            "in": "query",
             "name": "label-selector",
             "schema": {
               "type": "string"
@@ -4933,9 +6635,14 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPingList"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPingList"
+                }
               }
             },
-            "description": "com.nokia.eda.fabrics.v1alpha1.IslPingList"
+            "description": "OK"
           },
           "default": {
             "content": {
@@ -4958,7 +6665,7 @@
         "operationId": "wfCreateFabricsEdaNokiaComV1alpha1NamespaceIslpings",
         "parameters": [
           {
-            "description": "the namespace scope in which to create the IslPing",
+            "description": "the namespace scope in which to operate",
             "in": "path",
             "name": "namespace",
             "required": true,
@@ -4982,11 +6689,16 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WorkflowId"
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPing"
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPing"
                 }
               }
             },
-            "description": "The response for a successful POST workflows request."
+            "description": "Created"
           },
           "default": {
             "content": {
@@ -5092,9 +6804,14 @@
                 "schema": {
                   "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPing"
                 }
+              },
+              "application/yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/com.nokia.eda.fabrics.v1alpha1.IslPing"
+                }
               }
             },
-            "description": "com.nokia.eda.fabrics.v1alpha1.IslPing"
+            "description": "OK"
           },
           "default": {
             "content": {
@@ -5140,6 +6857,14 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "items": {
                     "type": "string"
@@ -5202,12 +6927,6 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
               "application/octet-stream": {
                 "schema": {
                   "format": "binary",
@@ -5220,11 +6939,6 @@
           "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              },
-              "application/octet-stream": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
@@ -5266,6 +6980,14 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowGetInputsRespElem"
+                  },
+                  "type": "array"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "items": {
                     "$ref": "#/components/schemas/WorkflowGetInputsRespElem"
@@ -5359,6 +7081,22 @@
             }
           },
           {
+            "description": "client information for streaming request",
+            "in": "query",
+            "name": "eventclient",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "stream information for streaming request",
+            "in": "query",
+            "name": "stream",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "description": "the namespace scope in which to operate",
             "in": "path",
             "name": "namespace",
@@ -5372,6 +7110,11 @@
           "200": {
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/yaml": {
                 "schema": {
                   "type": "string"
                 }
@@ -5391,6 +7134,50 @@
           }
         },
         "summary": "Read logs output by the IslPing.",
+        "tags": [
+          "workflows"
+        ]
+      }
+    },
+    "/workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings/{name}/_terminate": {
+      "put": {
+        "operationId": "wfTerminateFabricsEdaNokiaComV1alpha1NamespaceIslpings",
+        "parameters": [
+          {
+            "description": "name of the IslPing",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the namespace scope in which to operate",
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "no data is returned for this response type."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Details of an error in response to an API REST request."
+          }
+        },
+        "summary": "Terminate a IslPing workflow.",
         "tags": [
           "workflows"
         ]

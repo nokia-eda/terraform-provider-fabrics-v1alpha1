@@ -3,6 +3,22 @@ app_group:
       path: /apps/fabrics.eda.nokia.com
       method: GET
 
+intent_targets:
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_targets
+      method: GET
+  - read:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_targets
+      method: GET
+
+k8_s_topology_request:
+  - create:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_topology
+      method: POST
+  - create:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_topology
+      method: POST
+
 patch:
   - update:
       path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
@@ -125,37 +141,59 @@ com.nokia.eda.fabrics.v1alpha1.isl_ping_list:
       path: /workflows/v1/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/islpings
       method: GET
 
-totalPaths: 22
-totalSchemas: 46
-usedSchemas: 17
-unusedSchemas: 29
+totalPaths: 25
+totalSchemas: 70
+usedSchemas: 19
+unusedSchemas: 51
 unusedSchemaList:
   - AppGroupVersion
   - ErrorIndex
   - ErrorItem
   - ErrorResponse
+  - IntentTarget
   - K8SPatchOp
   - OverlayState
   - Resource
   - ResourceHistoryEntry
   - StatusDetails
   - TopoAttrMetadata
+  - TopoAttribute
+  - TopoBoolExpression
+  - TopoBoolLiteral
   - TopoElemMetadata
-  - TopoLinkEndpoint
+  - TopoEndpointBoolExpression
+  - TopoField
+  - TopoFixedBoolExpression
+  - TopoLabelSelector
+  - TopoLiteralStatusOrBadge
+  - TopoLiteralValue
+  - TopoLogicalExpression
   - TopoNodeGrouping
   - TopoOverlayEndpoint
   - TopoOverlayEndpointState
   - TopoOverlayLink
+  - TopoOverlayLinkGroup
+  - TopoOverlayLinkGroupEndpoint
   - TopoOverlayLinkState
   - TopoOverlayNode
+  - TopoOverlayNodeOrGroup
   - TopoOverlayNodeState
+  - TopoOverlayValue
   - TopoSchema
+  - TopoStateFilter
+  - TopoValue
+  - TopoValueExpression
   - Topology
-  - WorkflowId
   - WorkflowIdentifier
   - WorkflowInputDataElem
   - com.nokia.eda.fabrics.v1alpha1.Fabric_DeletedResourceEntry
+  - com.nokia.eda.fabrics.v1alpha1.Fabric_alarms
+  - com.nokia.eda.fabrics.v1alpha1.Fabric_deviations
   - com.nokia.eda.fabrics.v1alpha1.Fabric_metadata
   - com.nokia.eda.fabrics.v1alpha1.ISL_DeletedResourceEntry
+  - com.nokia.eda.fabrics.v1alpha1.ISL_alarms
+  - com.nokia.eda.fabrics.v1alpha1.ISL_deviations
   - com.nokia.eda.fabrics.v1alpha1.ISL_metadata
+  - com.nokia.eda.fabrics.v1alpha1.IslPing_alarms
+  - com.nokia.eda.fabrics.v1alpha1.IslPing_deviations
   - com.nokia.eda.fabrics.v1alpha1.IslPing_metadata

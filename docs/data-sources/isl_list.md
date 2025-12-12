@@ -24,6 +24,7 @@ description: |-
 - `fields` (String) a comma-separated list of resource fields to fetch/return.  If unspecified, all fields are fetched.  If empty, only key-fields are fetched.
 - `filter` (String) an EQL "where" expression that will be used to filter the set of resources returned.
 - `label_selector` (String) a label selector string to filter the results based on CR labels
+- `labelselector` (String) Deprecated: a label selector string to filter the results based on CR labels
 
 ### Read-Only
 
@@ -40,7 +41,9 @@ Optional:
 
 Read-Only:
 
+- `alarms` (Attributes) (see [below for nested schema](#nestedatt--items--alarms))
 - `api_version` (String)
+- `deviations` (Attributes) (see [below for nested schema](#nestedatt--items--deviations))
 - `kind` (String)
 - `metadata` (Attributes) (see [below for nested schema](#nestedatt--items--metadata))
 - `status` (Attributes) ISLStatus defines the observed state of ISL (see [below for nested schema](#nestedatt--items--status))
@@ -55,6 +58,7 @@ Optional:
 - `ip_mtu` (Number) Sets the IP MTU for the local and remote Interfaces
 - `local_default_router` (String) Reference to the DefautlRouter associated with the local Interface in which the ISL will be provisioned.
 - `local_interface` (String) Reference to an Interface.
+- `ospf` (Attributes) Enable or disable OSPF on the ISL. (see [below for nested schema](#nestedatt--items--spec--ospf))
 - `pool_ipv4` (String) Reference to an IPv4 allocation pool to use for ISL subnet allocations.
 - `pool_ipv6` (String) Reference to an IPv6 allocation pool to use for ISL subnet allocations.
 - `qos` (Attributes) (see [below for nested schema](#nestedatt--items--spec--qos))
@@ -73,7 +77,7 @@ Optional:
 - `enabled` (Boolean) Enable Biforward Detection.
 - `min_echo_receive_interval` (Number) The minimum interval between echo packets the local node can receive in microseconds.
 - `required_min_receive` (Number) The minimum interval in microseconds between received BFD control packets that this system should support.
-- `ttl` (Number) Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.
+- `ttl` (Number) Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.
 
 
 <a id="nestedatt--items--spec--bgp"></a>
@@ -91,6 +95,43 @@ Optional:
 - `remote_interface_as` (Number) The Autonomous System to configure on the Remote Interface.
 
 
+<a id="nestedatt--items--spec--ospf"></a>
+### Nested Schema for `items.spec.ospf`
+
+Optional:
+
+- `enabled` (Boolean) Enable or disable OSPF between the two endpoints of the ISL.
+kubebuilder:validation:Boolean
+- `ospfv2` (Attributes) OSPFv2 Parameters. (see [below for nested schema](#nestedatt--items--spec--ospf--ospfv2))
+- `ospfv3` (Attributes) OSPFv3 Parameters. (see [below for nested schema](#nestedatt--items--spec--ospf--ospfv3))
+
+<a id="nestedatt--items--spec--ospf--ospfv2"></a>
+### Nested Schema for `items.spec.ospf.ospfv2`
+
+Optional:
+
+- `local_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the local interface.
+- `local_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the local interface.
+- `remote_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the remote interface.
+- `remote_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the remote interface
+
+
+<a id="nestedatt--items--spec--ospf--ospfv3"></a>
+### Nested Schema for `items.spec.ospf.ospfv3`
+
+Optional:
+
+- `local_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the local interface.
+- `local_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the local interface
+- `local_ipv6_area` (String) Reference to a IPV6 DefaultOSPFArea on the local interface.
+- `local_ipv6_instance` (String) Reference to a IPV6 DefaultOSPFInstance on the local interface.
+- `remote_ipv4_area` (String) Reference to a IPV4 DefaultOSPFArea on the remote interface.
+- `remote_ipv4_instance` (String) Reference to a IPV4 DefaultOSPFInstance on the remote interface
+- `remote_ipv6_area` (String) Reference to a IPV6 DefaultOSPFArea on the remote interface.
+- `remote_ipv6_instance` (String) Reference to a IPV6 DefaultOSPFInstance on the remote interface.
+
+
+
 <a id="nestedatt--items--spec--qos"></a>
 ### Nested Schema for `items.spec.qos`
 
@@ -99,6 +140,25 @@ Optional:
 - `egress_policy` (String)
 - `ingress_policy` (String)
 
+
+
+<a id="nestedatt--items--alarms"></a>
+### Nested Schema for `items.alarms`
+
+Read-Only:
+
+- `critical` (Number)
+- `major` (Number)
+- `minor` (Number)
+- `warning` (Number)
+
+
+<a id="nestedatt--items--deviations"></a>
+### Nested Schema for `items.deviations`
+
+Read-Only:
+
+- `count` (Number)
 
 
 <a id="nestedatt--items--metadata"></a>
@@ -129,7 +189,7 @@ Read-Only:
 
 Read-Only:
 
-- `default_interface` (String) Reference to the DefaulInterface assocaited with the local interface
+- `default_interface` (String) Reference to the DefaulInterface associated with the local interface
 - `ipv4_address` (String) Local Interface IPv4 address
 - `ipv6_address` (String) Local Interface IPv4 address
 - `node` (String) Reference to the TopoNode on which the local interface is configured
@@ -140,7 +200,7 @@ Read-Only:
 
 Read-Only:
 
-- `default_interface` (String) Reference to the DefaulInterface assocaited with the remote interface
+- `default_interface` (String) Reference to the DefaulInterface associated with the remote interface
 - `ipv4_address` (String) Remote Interface IPv4 address
 - `ipv6_address` (String) Remote Interface IPv6 address
 - `node` (String) Reference to the TopoNode on which the remote interface is configured

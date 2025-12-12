@@ -25,6 +25,33 @@ import (
 func IslResourceSchema(ctx context.Context) schema.Schema {
 	return schema.Schema{
 		Attributes: map[string]schema.Attribute{
+			"alarms": schema.SingleNestedAttribute{
+				Attributes: map[string]schema.Attribute{
+					"critical": schema.Int64Attribute{
+						Optional: true,
+						Computed: true,
+					},
+					"major": schema.Int64Attribute{
+						Optional: true,
+						Computed: true,
+					},
+					"minor": schema.Int64Attribute{
+						Optional: true,
+						Computed: true,
+					},
+					"warning": schema.Int64Attribute{
+						Optional: true,
+						Computed: true,
+					},
+				},
+				CustomType: AlarmsType{
+					ObjectType: types.ObjectType{
+						AttrTypes: AlarmsValue{}.AttributeTypes(ctx),
+					},
+				},
+				Optional: true,
+				Computed: true,
+			},
 			"api_version": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -32,6 +59,21 @@ func IslResourceSchema(ctx context.Context) schema.Schema {
 					stringvalidator.RegexMatches(regexp.MustCompile("^fabrics\\.eda\\.nokia\\.com/v1alpha1$"), ""),
 				},
 				Default: stringdefault.StaticString("fabrics.eda.nokia.com/v1alpha1"),
+			},
+			"deviations": schema.SingleNestedAttribute{
+				Attributes: map[string]schema.Attribute{
+					"count": schema.Int64Attribute{
+						Optional: true,
+						Computed: true,
+					},
+				},
+				CustomType: DeviationsType{
+					ObjectType: types.ObjectType{
+						AttrTypes: DeviationsValue{}.AttributeTypes(ctx),
+					},
+				},
+				Optional: true,
+				Computed: true,
 			},
 			"kind": schema.StringAttribute{
 				Optional: true,
@@ -136,8 +178,8 @@ func IslResourceSchema(ctx context.Context) schema.Schema {
 							},
 							"ttl": schema.Int64Attribute{
 								Optional:            true,
-								Description:         "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
-								MarkdownDescription: "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
+								Description:         "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
+								MarkdownDescription: "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
 								Validators: []validator.Int64{
 									int64validator.Between(2, 255),
 								},
@@ -231,6 +273,107 @@ func IslResourceSchema(ctx context.Context) schema.Schema {
 						Description:         "Reference to an Interface.",
 						MarkdownDescription: "Reference to an Interface.",
 					},
+					"ospf": schema.SingleNestedAttribute{
+						Attributes: map[string]schema.Attribute{
+							"enabled": schema.BoolAttribute{
+								Required:            true,
+								Description:         "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean",
+								MarkdownDescription: "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean",
+							},
+							"ospfv2": schema.SingleNestedAttribute{
+								Attributes: map[string]schema.Attribute{
+									"local_ipv4_area": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFArea on the local interface.",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the local interface.",
+									},
+									"local_ipv4_instance": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFInstance on the local interface.",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the local interface.",
+									},
+									"remote_ipv4_area": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
+									},
+									"remote_ipv4_instance": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
+									},
+								},
+								CustomType: Ospfv2Type{
+									ObjectType: types.ObjectType{
+										AttrTypes: Ospfv2Value{}.AttributeTypes(ctx),
+									},
+								},
+								Optional:            true,
+								Description:         "OSPFv2 Parameters.",
+								MarkdownDescription: "OSPFv2 Parameters.",
+							},
+							"ospfv3": schema.SingleNestedAttribute{
+								Attributes: map[string]schema.Attribute{
+									"local_ipv4_area": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFArea on the local interface.",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the local interface.",
+									},
+									"local_ipv4_instance": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFInstance on the local interface",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the local interface",
+									},
+									"local_ipv6_area": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV6 DefaultOSPFArea on the local interface.",
+										MarkdownDescription: "Reference to a IPV6 DefaultOSPFArea on the local interface.",
+									},
+									"local_ipv6_instance": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV6 DefaultOSPFInstance on the local interface.",
+										MarkdownDescription: "Reference to a IPV6 DefaultOSPFInstance on the local interface.",
+									},
+									"remote_ipv4_area": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFArea on the remote interface.",
+									},
+									"remote_ipv4_instance": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
+										MarkdownDescription: "Reference to a IPV4 DefaultOSPFInstance on the remote interface",
+									},
+									"remote_ipv6_area": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV6 DefaultOSPFArea on the remote interface.",
+										MarkdownDescription: "Reference to a IPV6 DefaultOSPFArea on the remote interface.",
+									},
+									"remote_ipv6_instance": schema.StringAttribute{
+										Optional:            true,
+										Description:         "Reference to a IPV6 DefaultOSPFInstance on the remote interface.",
+										MarkdownDescription: "Reference to a IPV6 DefaultOSPFInstance on the remote interface.",
+									},
+								},
+								CustomType: Ospfv3Type{
+									ObjectType: types.ObjectType{
+										AttrTypes: Ospfv3Value{}.AttributeTypes(ctx),
+									},
+								},
+								Optional:            true,
+								Description:         "OSPFv3 Parameters.",
+								MarkdownDescription: "OSPFv3 Parameters.",
+							},
+						},
+						CustomType: OspfType{
+							ObjectType: types.ObjectType{
+								AttrTypes: OspfValue{}.AttributeTypes(ctx),
+							},
+						},
+						Optional:            true,
+						Description:         "Enable or disable OSPF on the ISL.",
+						MarkdownDescription: "Enable or disable OSPF on the ISL.",
+					},
 					"pool_ipv4": schema.StringAttribute{
 						Optional:            true,
 						Description:         "Reference to an IPv4 allocation pool to use for ISL subnet allocations.",
@@ -320,8 +463,8 @@ func IslResourceSchema(ctx context.Context) schema.Schema {
 							"default_interface": schema.StringAttribute{
 								Optional:            true,
 								Computed:            true,
-								Description:         "Reference to the DefaulInterface assocaited with the local interface",
-								MarkdownDescription: "Reference to the DefaulInterface assocaited with the local interface",
+								Description:         "Reference to the DefaulInterface associated with the local interface",
+								MarkdownDescription: "Reference to the DefaulInterface associated with the local interface",
 							},
 							"ipv4_address": schema.StringAttribute{
 								Optional:            true,
@@ -363,8 +506,8 @@ func IslResourceSchema(ctx context.Context) schema.Schema {
 							"default_interface": schema.StringAttribute{
 								Optional:            true,
 								Computed:            true,
-								Description:         "Reference to the DefaulInterface assocaited with the remote interface",
-								MarkdownDescription: "Reference to the DefaulInterface assocaited with the remote interface",
+								Description:         "Reference to the DefaulInterface associated with the remote interface",
+								MarkdownDescription: "Reference to the DefaulInterface associated with the remote interface",
 							},
 							"ipv4_address": schema.StringAttribute{
 								Optional:            true,
@@ -411,13 +554,828 @@ func IslResourceSchema(ctx context.Context) schema.Schema {
 }
 
 type IslModel struct {
-	ApiVersion types.String  `tfsdk:"api_version"`
-	Kind       types.String  `tfsdk:"kind"`
-	Metadata   MetadataValue `tfsdk:"metadata"`
-	Name       types.String  `tfsdk:"name"`
-	Namespace  types.String  `tfsdk:"namespace"`
-	Spec       SpecValue     `tfsdk:"spec"`
-	Status     StatusValue   `tfsdk:"status"`
+	Alarms     AlarmsValue     `tfsdk:"alarms"`
+	ApiVersion types.String    `tfsdk:"api_version"`
+	Deviations DeviationsValue `tfsdk:"deviations"`
+	Kind       types.String    `tfsdk:"kind"`
+	Metadata   MetadataValue   `tfsdk:"metadata"`
+	Name       types.String    `tfsdk:"name"`
+	Namespace  types.String    `tfsdk:"namespace"`
+	Spec       SpecValue       `tfsdk:"spec"`
+	Status     StatusValue     `tfsdk:"status"`
+}
+
+var _ basetypes.ObjectTypable = AlarmsType{}
+
+type AlarmsType struct {
+	basetypes.ObjectType
+}
+
+func (t AlarmsType) Equal(o attr.Type) bool {
+	other, ok := o.(AlarmsType)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t AlarmsType) String() string {
+	return "AlarmsType"
+}
+
+func (t AlarmsType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	criticalAttribute, ok := attributes["critical"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`critical is missing from object`)
+
+		return nil, diags
+	}
+
+	criticalVal, ok := criticalAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`critical expected to be basetypes.Int64Value, was: %T`, criticalAttribute))
+	}
+
+	majorAttribute, ok := attributes["major"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`major is missing from object`)
+
+		return nil, diags
+	}
+
+	majorVal, ok := majorAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`major expected to be basetypes.Int64Value, was: %T`, majorAttribute))
+	}
+
+	minorAttribute, ok := attributes["minor"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`minor is missing from object`)
+
+		return nil, diags
+	}
+
+	minorVal, ok := minorAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`minor expected to be basetypes.Int64Value, was: %T`, minorAttribute))
+	}
+
+	warningAttribute, ok := attributes["warning"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`warning is missing from object`)
+
+		return nil, diags
+	}
+
+	warningVal, ok := warningAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`warning expected to be basetypes.Int64Value, was: %T`, warningAttribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return AlarmsValue{
+		Critical: criticalVal,
+		Major:    majorVal,
+		Minor:    minorVal,
+		Warning:  warningVal,
+		state:    attr.ValueStateKnown,
+	}, diags
+}
+
+func NewAlarmsValueNull() AlarmsValue {
+	return AlarmsValue{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewAlarmsValueUnknown() AlarmsValue {
+	return AlarmsValue{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewAlarmsValue(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (AlarmsValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing AlarmsValue Attribute Value",
+				"While creating a AlarmsValue value, a missing attribute value was detected. "+
+					"A AlarmsValue must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("AlarmsValue Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid AlarmsValue Attribute Type",
+				"While creating a AlarmsValue value, an invalid attribute value was detected. "+
+					"A AlarmsValue must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("AlarmsValue Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("AlarmsValue Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra AlarmsValue Attribute Value",
+				"While creating a AlarmsValue value, an extra attribute value was detected. "+
+					"A AlarmsValue must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra AlarmsValue Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewAlarmsValueUnknown(), diags
+	}
+
+	criticalAttribute, ok := attributes["critical"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`critical is missing from object`)
+
+		return NewAlarmsValueUnknown(), diags
+	}
+
+	criticalVal, ok := criticalAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`critical expected to be basetypes.Int64Value, was: %T`, criticalAttribute))
+	}
+
+	majorAttribute, ok := attributes["major"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`major is missing from object`)
+
+		return NewAlarmsValueUnknown(), diags
+	}
+
+	majorVal, ok := majorAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`major expected to be basetypes.Int64Value, was: %T`, majorAttribute))
+	}
+
+	minorAttribute, ok := attributes["minor"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`minor is missing from object`)
+
+		return NewAlarmsValueUnknown(), diags
+	}
+
+	minorVal, ok := minorAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`minor expected to be basetypes.Int64Value, was: %T`, minorAttribute))
+	}
+
+	warningAttribute, ok := attributes["warning"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`warning is missing from object`)
+
+		return NewAlarmsValueUnknown(), diags
+	}
+
+	warningVal, ok := warningAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`warning expected to be basetypes.Int64Value, was: %T`, warningAttribute))
+	}
+
+	if diags.HasError() {
+		return NewAlarmsValueUnknown(), diags
+	}
+
+	return AlarmsValue{
+		Critical: criticalVal,
+		Major:    majorVal,
+		Minor:    minorVal,
+		Warning:  warningVal,
+		state:    attr.ValueStateKnown,
+	}, diags
+}
+
+func NewAlarmsValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) AlarmsValue {
+	object, diags := NewAlarmsValue(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewAlarmsValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t AlarmsType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewAlarmsValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewAlarmsValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewAlarmsValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewAlarmsValueMust(AlarmsValue{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t AlarmsType) ValueType(ctx context.Context) attr.Value {
+	return AlarmsValue{}
+}
+
+var _ basetypes.ObjectValuable = AlarmsValue{}
+
+type AlarmsValue struct {
+	Critical basetypes.Int64Value `tfsdk:"critical"`
+	Major    basetypes.Int64Value `tfsdk:"major"`
+	Minor    basetypes.Int64Value `tfsdk:"minor"`
+	Warning  basetypes.Int64Value `tfsdk:"warning"`
+	state    attr.ValueState
+}
+
+func (v AlarmsValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 4)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["critical"] = basetypes.Int64Type{}.TerraformType(ctx)
+	attrTypes["major"] = basetypes.Int64Type{}.TerraformType(ctx)
+	attrTypes["minor"] = basetypes.Int64Type{}.TerraformType(ctx)
+	attrTypes["warning"] = basetypes.Int64Type{}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 4)
+
+		val, err = v.Critical.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["critical"] = val
+
+		val, err = v.Major.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["major"] = val
+
+		val, err = v.Minor.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["minor"] = val
+
+		val, err = v.Warning.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["warning"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v AlarmsValue) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v AlarmsValue) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v AlarmsValue) String() string {
+	return "AlarmsValue"
+}
+
+func (v AlarmsValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributeTypes := map[string]attr.Type{
+		"critical": basetypes.Int64Type{},
+		"major":    basetypes.Int64Type{},
+		"minor":    basetypes.Int64Type{},
+		"warning":  basetypes.Int64Type{},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"critical": v.Critical,
+			"major":    v.Major,
+			"minor":    v.Minor,
+			"warning":  v.Warning,
+		})
+
+	return objVal, diags
+}
+
+func (v AlarmsValue) Equal(o attr.Value) bool {
+	other, ok := o.(AlarmsValue)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.Critical.Equal(other.Critical) {
+		return false
+	}
+
+	if !v.Major.Equal(other.Major) {
+		return false
+	}
+
+	if !v.Minor.Equal(other.Minor) {
+		return false
+	}
+
+	if !v.Warning.Equal(other.Warning) {
+		return false
+	}
+
+	return true
+}
+
+func (v AlarmsValue) Type(ctx context.Context) attr.Type {
+	return AlarmsType{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v AlarmsValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"critical": basetypes.Int64Type{},
+		"major":    basetypes.Int64Type{},
+		"minor":    basetypes.Int64Type{},
+		"warning":  basetypes.Int64Type{},
+	}
+}
+
+var _ basetypes.ObjectTypable = DeviationsType{}
+
+type DeviationsType struct {
+	basetypes.ObjectType
+}
+
+func (t DeviationsType) Equal(o attr.Type) bool {
+	other, ok := o.(DeviationsType)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t DeviationsType) String() string {
+	return "DeviationsType"
+}
+
+func (t DeviationsType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	countAttribute, ok := attributes["count"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`count is missing from object`)
+
+		return nil, diags
+	}
+
+	countVal, ok := countAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`count expected to be basetypes.Int64Value, was: %T`, countAttribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return DeviationsValue{
+		Count: countVal,
+		state: attr.ValueStateKnown,
+	}, diags
+}
+
+func NewDeviationsValueNull() DeviationsValue {
+	return DeviationsValue{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewDeviationsValueUnknown() DeviationsValue {
+	return DeviationsValue{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewDeviationsValue(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (DeviationsValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing DeviationsValue Attribute Value",
+				"While creating a DeviationsValue value, a missing attribute value was detected. "+
+					"A DeviationsValue must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("DeviationsValue Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid DeviationsValue Attribute Type",
+				"While creating a DeviationsValue value, an invalid attribute value was detected. "+
+					"A DeviationsValue must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("DeviationsValue Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("DeviationsValue Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra DeviationsValue Attribute Value",
+				"While creating a DeviationsValue value, an extra attribute value was detected. "+
+					"A DeviationsValue must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra DeviationsValue Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewDeviationsValueUnknown(), diags
+	}
+
+	countAttribute, ok := attributes["count"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`count is missing from object`)
+
+		return NewDeviationsValueUnknown(), diags
+	}
+
+	countVal, ok := countAttribute.(basetypes.Int64Value)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`count expected to be basetypes.Int64Value, was: %T`, countAttribute))
+	}
+
+	if diags.HasError() {
+		return NewDeviationsValueUnknown(), diags
+	}
+
+	return DeviationsValue{
+		Count: countVal,
+		state: attr.ValueStateKnown,
+	}, diags
+}
+
+func NewDeviationsValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) DeviationsValue {
+	object, diags := NewDeviationsValue(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewDeviationsValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t DeviationsType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewDeviationsValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewDeviationsValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewDeviationsValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewDeviationsValueMust(DeviationsValue{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t DeviationsType) ValueType(ctx context.Context) attr.Value {
+	return DeviationsValue{}
+}
+
+var _ basetypes.ObjectValuable = DeviationsValue{}
+
+type DeviationsValue struct {
+	Count basetypes.Int64Value `tfsdk:"count"`
+	state attr.ValueState
+}
+
+func (v DeviationsValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 1)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["count"] = basetypes.Int64Type{}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 1)
+
+		val, err = v.Count.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["count"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v DeviationsValue) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v DeviationsValue) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v DeviationsValue) String() string {
+	return "DeviationsValue"
+}
+
+func (v DeviationsValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributeTypes := map[string]attr.Type{
+		"count": basetypes.Int64Type{},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"count": v.Count,
+		})
+
+	return objVal, diags
+}
+
+func (v DeviationsValue) Equal(o attr.Value) bool {
+	other, ok := o.(DeviationsValue)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.Count.Equal(other.Count) {
+		return false
+	}
+
+	return true
+}
+
+func (v DeviationsValue) Type(ctx context.Context) attr.Type {
+	return DeviationsType{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v DeviationsValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"count": basetypes.Int64Type{},
+	}
 }
 
 var _ basetypes.ObjectTypable = MetadataType{}
@@ -1086,6 +2044,24 @@ func (t SpecType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 			fmt.Sprintf(`local_interface expected to be basetypes.StringValue, was: %T`, localInterfaceAttribute))
 	}
 
+	ospfAttribute, ok := attributes["ospf"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`ospf is missing from object`)
+
+		return nil, diags
+	}
+
+	ospfVal, ok := ospfAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`ospf expected to be basetypes.ObjectValue, was: %T`, ospfAttribute))
+	}
+
 	poolIpv4Attribute, ok := attributes["pool_ipv4"]
 
 	if !ok {
@@ -1222,6 +2198,7 @@ func (t SpecType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue)
 		IpMtu:               ipMtuVal,
 		LocalDefaultRouter:  localDefaultRouterVal,
 		LocalInterface:      localInterfaceVal,
+		Ospf:                ospfVal,
 		PoolIpv4:            poolIpv4Val,
 		PoolIpv6:            poolIpv6Val,
 		Qos:                 qosVal,
@@ -1386,6 +2363,24 @@ func NewSpecValue(attributeTypes map[string]attr.Type, attributes map[string]att
 			fmt.Sprintf(`local_interface expected to be basetypes.StringValue, was: %T`, localInterfaceAttribute))
 	}
 
+	ospfAttribute, ok := attributes["ospf"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`ospf is missing from object`)
+
+		return NewSpecValueUnknown(), diags
+	}
+
+	ospfVal, ok := ospfAttribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`ospf expected to be basetypes.ObjectValue, was: %T`, ospfAttribute))
+	}
+
 	poolIpv4Attribute, ok := attributes["pool_ipv4"]
 
 	if !ok {
@@ -1522,6 +2517,7 @@ func NewSpecValue(attributeTypes map[string]attr.Type, attributes map[string]att
 		IpMtu:               ipMtuVal,
 		LocalDefaultRouter:  localDefaultRouterVal,
 		LocalInterface:      localInterfaceVal,
+		Ospf:                ospfVal,
 		PoolIpv4:            poolIpv4Val,
 		PoolIpv6:            poolIpv6Val,
 		Qos:                 qosVal,
@@ -1606,6 +2602,7 @@ type SpecValue struct {
 	IpMtu               basetypes.Int64Value  `tfsdk:"ip_mtu"`
 	LocalDefaultRouter  basetypes.StringValue `tfsdk:"local_default_router"`
 	LocalInterface      basetypes.StringValue `tfsdk:"local_interface"`
+	Ospf                basetypes.ObjectValue `tfsdk:"ospf"`
 	PoolIpv4            basetypes.StringValue `tfsdk:"pool_ipv4"`
 	PoolIpv6            basetypes.StringValue `tfsdk:"pool_ipv6"`
 	Qos                 basetypes.ObjectValue `tfsdk:"qos"`
@@ -1617,7 +2614,7 @@ type SpecValue struct {
 }
 
 func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
-	attrTypes := make(map[string]tftypes.Type, 12)
+	attrTypes := make(map[string]tftypes.Type, 13)
 
 	var val tftypes.Value
 	var err error
@@ -1631,6 +2628,9 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 	attrTypes["ip_mtu"] = basetypes.Int64Type{}.TerraformType(ctx)
 	attrTypes["local_default_router"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["local_interface"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["ospf"] = basetypes.ObjectType{
+		AttrTypes: OspfValue{}.AttributeTypes(ctx),
+	}.TerraformType(ctx)
 	attrTypes["pool_ipv4"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["pool_ipv6"] = basetypes.StringType{}.TerraformType(ctx)
 	attrTypes["qos"] = basetypes.ObjectType{
@@ -1645,7 +2645,7 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 
 	switch v.state {
 	case attr.ValueStateKnown:
-		vals := make(map[string]tftypes.Value, 12)
+		vals := make(map[string]tftypes.Value, 13)
 
 		val, err = v.Bfd.ToTerraformValue(ctx)
 
@@ -1686,6 +2686,14 @@ func (v SpecValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) 
 		}
 
 		vals["local_interface"] = val
+
+		val, err = v.Ospf.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["ospf"] = val
 
 		val, err = v.PoolIpv4.ToTerraformValue(ctx)
 
@@ -1814,6 +2822,27 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		)
 	}
 
+	var ospf basetypes.ObjectValue
+
+	if v.Ospf.IsNull() {
+		ospf = types.ObjectNull(
+			OspfValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if v.Ospf.IsUnknown() {
+		ospf = types.ObjectUnknown(
+			OspfValue{}.AttributeTypes(ctx),
+		)
+	}
+
+	if !v.Ospf.IsNull() && !v.Ospf.IsUnknown() {
+		ospf = types.ObjectValueMust(
+			OspfValue{}.AttributeTypes(ctx),
+			v.Ospf.Attributes(),
+		)
+	}
+
 	var qos basetypes.ObjectValue
 
 	if v.Qos.IsNull() {
@@ -1845,8 +2874,11 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 		"ip_mtu":               basetypes.Int64Type{},
 		"local_default_router": basetypes.StringType{},
 		"local_interface":      basetypes.StringType{},
-		"pool_ipv4":            basetypes.StringType{},
-		"pool_ipv6":            basetypes.StringType{},
+		"ospf": basetypes.ObjectType{
+			AttrTypes: OspfValue{}.AttributeTypes(ctx),
+		},
+		"pool_ipv4": basetypes.StringType{},
+		"pool_ipv6": basetypes.StringType{},
 		"qos": basetypes.ObjectType{
 			AttrTypes: QosValue{}.AttributeTypes(ctx),
 		},
@@ -1872,6 +2904,7 @@ func (v SpecValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, di
 			"ip_mtu":                v.IpMtu,
 			"local_default_router":  v.LocalDefaultRouter,
 			"local_interface":       v.LocalInterface,
+			"ospf":                  ospf,
 			"pool_ipv4":             v.PoolIpv4,
 			"pool_ipv6":             v.PoolIpv6,
 			"qos":                   qos,
@@ -1916,6 +2949,10 @@ func (v SpecValue) Equal(o attr.Value) bool {
 	}
 
 	if !v.LocalInterface.Equal(other.LocalInterface) {
+		return false
+	}
+
+	if !v.Ospf.Equal(other.Ospf) {
 		return false
 	}
 
@@ -1969,8 +3006,11 @@ func (v SpecValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"ip_mtu":               basetypes.Int64Type{},
 		"local_default_router": basetypes.StringType{},
 		"local_interface":      basetypes.StringType{},
-		"pool_ipv4":            basetypes.StringType{},
-		"pool_ipv6":            basetypes.StringType{},
+		"ospf": basetypes.ObjectType{
+			AttrTypes: OspfValue{}.AttributeTypes(ctx),
+		},
+		"pool_ipv4": basetypes.StringType{},
+		"pool_ipv6": basetypes.StringType{},
 		"qos": basetypes.ObjectType{
 			AttrTypes: QosValue{}.AttributeTypes(ctx),
 		},
@@ -3397,6 +4437,1692 @@ func (v BgpValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
 		"keychain":            basetypes.StringType{},
 		"local_interface_as":  basetypes.Int64Type{},
 		"remote_interface_as": basetypes.Int64Type{},
+	}
+}
+
+var _ basetypes.ObjectTypable = OspfType{}
+
+type OspfType struct {
+	basetypes.ObjectType
+}
+
+func (t OspfType) Equal(o attr.Type) bool {
+	other, ok := o.(OspfType)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t OspfType) String() string {
+	return "OspfType"
+}
+
+func (t OspfType) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	enabledAttribute, ok := attributes["enabled"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`enabled is missing from object`)
+
+		return nil, diags
+	}
+
+	enabledVal, ok := enabledAttribute.(basetypes.BoolValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`enabled expected to be basetypes.BoolValue, was: %T`, enabledAttribute))
+	}
+
+	ospfv2Attribute, ok := attributes["ospfv2"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`ospfv2 is missing from object`)
+
+		return nil, diags
+	}
+
+	ospfv2Val, ok := ospfv2Attribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`ospfv2 expected to be basetypes.ObjectValue, was: %T`, ospfv2Attribute))
+	}
+
+	ospfv3Attribute, ok := attributes["ospfv3"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`ospfv3 is missing from object`)
+
+		return nil, diags
+	}
+
+	ospfv3Val, ok := ospfv3Attribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`ospfv3 expected to be basetypes.ObjectValue, was: %T`, ospfv3Attribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return OspfValue{
+		Enabled: enabledVal,
+		Ospfv2:  ospfv2Val,
+		Ospfv3:  ospfv3Val,
+		state:   attr.ValueStateKnown,
+	}, diags
+}
+
+func NewOspfValueNull() OspfValue {
+	return OspfValue{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewOspfValueUnknown() OspfValue {
+	return OspfValue{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewOspfValue(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (OspfValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing OspfValue Attribute Value",
+				"While creating a OspfValue value, a missing attribute value was detected. "+
+					"A OspfValue must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("OspfValue Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid OspfValue Attribute Type",
+				"While creating a OspfValue value, an invalid attribute value was detected. "+
+					"A OspfValue must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("OspfValue Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("OspfValue Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra OspfValue Attribute Value",
+				"While creating a OspfValue value, an extra attribute value was detected. "+
+					"A OspfValue must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra OspfValue Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewOspfValueUnknown(), diags
+	}
+
+	enabledAttribute, ok := attributes["enabled"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`enabled is missing from object`)
+
+		return NewOspfValueUnknown(), diags
+	}
+
+	enabledVal, ok := enabledAttribute.(basetypes.BoolValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`enabled expected to be basetypes.BoolValue, was: %T`, enabledAttribute))
+	}
+
+	ospfv2Attribute, ok := attributes["ospfv2"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`ospfv2 is missing from object`)
+
+		return NewOspfValueUnknown(), diags
+	}
+
+	ospfv2Val, ok := ospfv2Attribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`ospfv2 expected to be basetypes.ObjectValue, was: %T`, ospfv2Attribute))
+	}
+
+	ospfv3Attribute, ok := attributes["ospfv3"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`ospfv3 is missing from object`)
+
+		return NewOspfValueUnknown(), diags
+	}
+
+	ospfv3Val, ok := ospfv3Attribute.(basetypes.ObjectValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`ospfv3 expected to be basetypes.ObjectValue, was: %T`, ospfv3Attribute))
+	}
+
+	if diags.HasError() {
+		return NewOspfValueUnknown(), diags
+	}
+
+	return OspfValue{
+		Enabled: enabledVal,
+		Ospfv2:  ospfv2Val,
+		Ospfv3:  ospfv3Val,
+		state:   attr.ValueStateKnown,
+	}, diags
+}
+
+func NewOspfValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) OspfValue {
+	object, diags := NewOspfValue(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewOspfValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t OspfType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewOspfValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewOspfValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewOspfValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewOspfValueMust(OspfValue{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t OspfType) ValueType(ctx context.Context) attr.Value {
+	return OspfValue{}
+}
+
+var _ basetypes.ObjectValuable = OspfValue{}
+
+type OspfValue struct {
+	Enabled basetypes.BoolValue   `tfsdk:"enabled"`
+	Ospfv2  basetypes.ObjectValue `tfsdk:"ospfv2"`
+	Ospfv3  basetypes.ObjectValue `tfsdk:"ospfv3"`
+	state   attr.ValueState
+}
+
+func (v OspfValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 3)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["enabled"] = basetypes.BoolType{}.TerraformType(ctx)
+	attrTypes["ospfv2"] = basetypes.ObjectType{
+		AttrTypes: Ospfv2Value{}.AttributeTypes(ctx),
+	}.TerraformType(ctx)
+	attrTypes["ospfv3"] = basetypes.ObjectType{
+		AttrTypes: Ospfv3Value{}.AttributeTypes(ctx),
+	}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 3)
+
+		val, err = v.Enabled.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["enabled"] = val
+
+		val, err = v.Ospfv2.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["ospfv2"] = val
+
+		val, err = v.Ospfv3.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["ospfv3"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v OspfValue) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v OspfValue) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v OspfValue) String() string {
+	return "OspfValue"
+}
+
+func (v OspfValue) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	var ospfv2 basetypes.ObjectValue
+
+	if v.Ospfv2.IsNull() {
+		ospfv2 = types.ObjectNull(
+			Ospfv2Value{}.AttributeTypes(ctx),
+		)
+	}
+
+	if v.Ospfv2.IsUnknown() {
+		ospfv2 = types.ObjectUnknown(
+			Ospfv2Value{}.AttributeTypes(ctx),
+		)
+	}
+
+	if !v.Ospfv2.IsNull() && !v.Ospfv2.IsUnknown() {
+		ospfv2 = types.ObjectValueMust(
+			Ospfv2Value{}.AttributeTypes(ctx),
+			v.Ospfv2.Attributes(),
+		)
+	}
+
+	var ospfv3 basetypes.ObjectValue
+
+	if v.Ospfv3.IsNull() {
+		ospfv3 = types.ObjectNull(
+			Ospfv3Value{}.AttributeTypes(ctx),
+		)
+	}
+
+	if v.Ospfv3.IsUnknown() {
+		ospfv3 = types.ObjectUnknown(
+			Ospfv3Value{}.AttributeTypes(ctx),
+		)
+	}
+
+	if !v.Ospfv3.IsNull() && !v.Ospfv3.IsUnknown() {
+		ospfv3 = types.ObjectValueMust(
+			Ospfv3Value{}.AttributeTypes(ctx),
+			v.Ospfv3.Attributes(),
+		)
+	}
+
+	attributeTypes := map[string]attr.Type{
+		"enabled": basetypes.BoolType{},
+		"ospfv2": basetypes.ObjectType{
+			AttrTypes: Ospfv2Value{}.AttributeTypes(ctx),
+		},
+		"ospfv3": basetypes.ObjectType{
+			AttrTypes: Ospfv3Value{}.AttributeTypes(ctx),
+		},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"enabled": v.Enabled,
+			"ospfv2":  ospfv2,
+			"ospfv3":  ospfv3,
+		})
+
+	return objVal, diags
+}
+
+func (v OspfValue) Equal(o attr.Value) bool {
+	other, ok := o.(OspfValue)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.Enabled.Equal(other.Enabled) {
+		return false
+	}
+
+	if !v.Ospfv2.Equal(other.Ospfv2) {
+		return false
+	}
+
+	if !v.Ospfv3.Equal(other.Ospfv3) {
+		return false
+	}
+
+	return true
+}
+
+func (v OspfValue) Type(ctx context.Context) attr.Type {
+	return OspfType{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v OspfValue) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"enabled": basetypes.BoolType{},
+		"ospfv2": basetypes.ObjectType{
+			AttrTypes: Ospfv2Value{}.AttributeTypes(ctx),
+		},
+		"ospfv3": basetypes.ObjectType{
+			AttrTypes: Ospfv3Value{}.AttributeTypes(ctx),
+		},
+	}
+}
+
+var _ basetypes.ObjectTypable = Ospfv2Type{}
+
+type Ospfv2Type struct {
+	basetypes.ObjectType
+}
+
+func (t Ospfv2Type) Equal(o attr.Type) bool {
+	other, ok := o.(Ospfv2Type)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t Ospfv2Type) String() string {
+	return "Ospfv2Type"
+}
+
+func (t Ospfv2Type) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	localIpv4AreaAttribute, ok := attributes["local_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_area is missing from object`)
+
+		return nil, diags
+	}
+
+	localIpv4AreaVal, ok := localIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_area expected to be basetypes.StringValue, was: %T`, localIpv4AreaAttribute))
+	}
+
+	localIpv4InstanceAttribute, ok := attributes["local_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	localIpv4InstanceVal, ok := localIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_instance expected to be basetypes.StringValue, was: %T`, localIpv4InstanceAttribute))
+	}
+
+	remoteIpv4AreaAttribute, ok := attributes["remote_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_area is missing from object`)
+
+		return nil, diags
+	}
+
+	remoteIpv4AreaVal, ok := remoteIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_area expected to be basetypes.StringValue, was: %T`, remoteIpv4AreaAttribute))
+	}
+
+	remoteIpv4InstanceAttribute, ok := attributes["remote_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	remoteIpv4InstanceVal, ok := remoteIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_instance expected to be basetypes.StringValue, was: %T`, remoteIpv4InstanceAttribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return Ospfv2Value{
+		LocalIpv4Area:      localIpv4AreaVal,
+		LocalIpv4Instance:  localIpv4InstanceVal,
+		RemoteIpv4Area:     remoteIpv4AreaVal,
+		RemoteIpv4Instance: remoteIpv4InstanceVal,
+		state:              attr.ValueStateKnown,
+	}, diags
+}
+
+func NewOspfv2ValueNull() Ospfv2Value {
+	return Ospfv2Value{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewOspfv2ValueUnknown() Ospfv2Value {
+	return Ospfv2Value{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewOspfv2Value(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (Ospfv2Value, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing Ospfv2Value Attribute Value",
+				"While creating a Ospfv2Value value, a missing attribute value was detected. "+
+					"A Ospfv2Value must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Ospfv2Value Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid Ospfv2Value Attribute Type",
+				"While creating a Ospfv2Value value, an invalid attribute value was detected. "+
+					"A Ospfv2Value must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Ospfv2Value Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("Ospfv2Value Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra Ospfv2Value Attribute Value",
+				"While creating a Ospfv2Value value, an extra attribute value was detected. "+
+					"A Ospfv2Value must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra Ospfv2Value Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewOspfv2ValueUnknown(), diags
+	}
+
+	localIpv4AreaAttribute, ok := attributes["local_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_area is missing from object`)
+
+		return NewOspfv2ValueUnknown(), diags
+	}
+
+	localIpv4AreaVal, ok := localIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_area expected to be basetypes.StringValue, was: %T`, localIpv4AreaAttribute))
+	}
+
+	localIpv4InstanceAttribute, ok := attributes["local_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_instance is missing from object`)
+
+		return NewOspfv2ValueUnknown(), diags
+	}
+
+	localIpv4InstanceVal, ok := localIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_instance expected to be basetypes.StringValue, was: %T`, localIpv4InstanceAttribute))
+	}
+
+	remoteIpv4AreaAttribute, ok := attributes["remote_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_area is missing from object`)
+
+		return NewOspfv2ValueUnknown(), diags
+	}
+
+	remoteIpv4AreaVal, ok := remoteIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_area expected to be basetypes.StringValue, was: %T`, remoteIpv4AreaAttribute))
+	}
+
+	remoteIpv4InstanceAttribute, ok := attributes["remote_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_instance is missing from object`)
+
+		return NewOspfv2ValueUnknown(), diags
+	}
+
+	remoteIpv4InstanceVal, ok := remoteIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_instance expected to be basetypes.StringValue, was: %T`, remoteIpv4InstanceAttribute))
+	}
+
+	if diags.HasError() {
+		return NewOspfv2ValueUnknown(), diags
+	}
+
+	return Ospfv2Value{
+		LocalIpv4Area:      localIpv4AreaVal,
+		LocalIpv4Instance:  localIpv4InstanceVal,
+		RemoteIpv4Area:     remoteIpv4AreaVal,
+		RemoteIpv4Instance: remoteIpv4InstanceVal,
+		state:              attr.ValueStateKnown,
+	}, diags
+}
+
+func NewOspfv2ValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) Ospfv2Value {
+	object, diags := NewOspfv2Value(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewOspfv2ValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t Ospfv2Type) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewOspfv2ValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewOspfv2ValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewOspfv2ValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewOspfv2ValueMust(Ospfv2Value{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t Ospfv2Type) ValueType(ctx context.Context) attr.Value {
+	return Ospfv2Value{}
+}
+
+var _ basetypes.ObjectValuable = Ospfv2Value{}
+
+type Ospfv2Value struct {
+	LocalIpv4Area      basetypes.StringValue `tfsdk:"local_ipv4_area"`
+	LocalIpv4Instance  basetypes.StringValue `tfsdk:"local_ipv4_instance"`
+	RemoteIpv4Area     basetypes.StringValue `tfsdk:"remote_ipv4_area"`
+	RemoteIpv4Instance basetypes.StringValue `tfsdk:"remote_ipv4_instance"`
+	state              attr.ValueState
+}
+
+func (v Ospfv2Value) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 4)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["local_ipv4_area"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["local_ipv4_instance"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["remote_ipv4_area"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["remote_ipv4_instance"] = basetypes.StringType{}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 4)
+
+		val, err = v.LocalIpv4Area.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["local_ipv4_area"] = val
+
+		val, err = v.LocalIpv4Instance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["local_ipv4_instance"] = val
+
+		val, err = v.RemoteIpv4Area.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["remote_ipv4_area"] = val
+
+		val, err = v.RemoteIpv4Instance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["remote_ipv4_instance"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v Ospfv2Value) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v Ospfv2Value) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v Ospfv2Value) String() string {
+	return "Ospfv2Value"
+}
+
+func (v Ospfv2Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributeTypes := map[string]attr.Type{
+		"local_ipv4_area":      basetypes.StringType{},
+		"local_ipv4_instance":  basetypes.StringType{},
+		"remote_ipv4_area":     basetypes.StringType{},
+		"remote_ipv4_instance": basetypes.StringType{},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"local_ipv4_area":      v.LocalIpv4Area,
+			"local_ipv4_instance":  v.LocalIpv4Instance,
+			"remote_ipv4_area":     v.RemoteIpv4Area,
+			"remote_ipv4_instance": v.RemoteIpv4Instance,
+		})
+
+	return objVal, diags
+}
+
+func (v Ospfv2Value) Equal(o attr.Value) bool {
+	other, ok := o.(Ospfv2Value)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.LocalIpv4Area.Equal(other.LocalIpv4Area) {
+		return false
+	}
+
+	if !v.LocalIpv4Instance.Equal(other.LocalIpv4Instance) {
+		return false
+	}
+
+	if !v.RemoteIpv4Area.Equal(other.RemoteIpv4Area) {
+		return false
+	}
+
+	if !v.RemoteIpv4Instance.Equal(other.RemoteIpv4Instance) {
+		return false
+	}
+
+	return true
+}
+
+func (v Ospfv2Value) Type(ctx context.Context) attr.Type {
+	return Ospfv2Type{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v Ospfv2Value) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"local_ipv4_area":      basetypes.StringType{},
+		"local_ipv4_instance":  basetypes.StringType{},
+		"remote_ipv4_area":     basetypes.StringType{},
+		"remote_ipv4_instance": basetypes.StringType{},
+	}
+}
+
+var _ basetypes.ObjectTypable = Ospfv3Type{}
+
+type Ospfv3Type struct {
+	basetypes.ObjectType
+}
+
+func (t Ospfv3Type) Equal(o attr.Type) bool {
+	other, ok := o.(Ospfv3Type)
+
+	if !ok {
+		return false
+	}
+
+	return t.ObjectType.Equal(other.ObjectType)
+}
+
+func (t Ospfv3Type) String() string {
+	return "Ospfv3Type"
+}
+
+func (t Ospfv3Type) ValueFromObject(ctx context.Context, in basetypes.ObjectValue) (basetypes.ObjectValuable, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributes := in.Attributes()
+
+	localIpv4AreaAttribute, ok := attributes["local_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_area is missing from object`)
+
+		return nil, diags
+	}
+
+	localIpv4AreaVal, ok := localIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_area expected to be basetypes.StringValue, was: %T`, localIpv4AreaAttribute))
+	}
+
+	localIpv4InstanceAttribute, ok := attributes["local_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	localIpv4InstanceVal, ok := localIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_instance expected to be basetypes.StringValue, was: %T`, localIpv4InstanceAttribute))
+	}
+
+	localIpv6AreaAttribute, ok := attributes["local_ipv6_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv6_area is missing from object`)
+
+		return nil, diags
+	}
+
+	localIpv6AreaVal, ok := localIpv6AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv6_area expected to be basetypes.StringValue, was: %T`, localIpv6AreaAttribute))
+	}
+
+	localIpv6InstanceAttribute, ok := attributes["local_ipv6_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv6_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	localIpv6InstanceVal, ok := localIpv6InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv6_instance expected to be basetypes.StringValue, was: %T`, localIpv6InstanceAttribute))
+	}
+
+	remoteIpv4AreaAttribute, ok := attributes["remote_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_area is missing from object`)
+
+		return nil, diags
+	}
+
+	remoteIpv4AreaVal, ok := remoteIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_area expected to be basetypes.StringValue, was: %T`, remoteIpv4AreaAttribute))
+	}
+
+	remoteIpv4InstanceAttribute, ok := attributes["remote_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	remoteIpv4InstanceVal, ok := remoteIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_instance expected to be basetypes.StringValue, was: %T`, remoteIpv4InstanceAttribute))
+	}
+
+	remoteIpv6AreaAttribute, ok := attributes["remote_ipv6_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv6_area is missing from object`)
+
+		return nil, diags
+	}
+
+	remoteIpv6AreaVal, ok := remoteIpv6AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv6_area expected to be basetypes.StringValue, was: %T`, remoteIpv6AreaAttribute))
+	}
+
+	remoteIpv6InstanceAttribute, ok := attributes["remote_ipv6_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv6_instance is missing from object`)
+
+		return nil, diags
+	}
+
+	remoteIpv6InstanceVal, ok := remoteIpv6InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv6_instance expected to be basetypes.StringValue, was: %T`, remoteIpv6InstanceAttribute))
+	}
+
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	return Ospfv3Value{
+		LocalIpv4Area:      localIpv4AreaVal,
+		LocalIpv4Instance:  localIpv4InstanceVal,
+		LocalIpv6Area:      localIpv6AreaVal,
+		LocalIpv6Instance:  localIpv6InstanceVal,
+		RemoteIpv4Area:     remoteIpv4AreaVal,
+		RemoteIpv4Instance: remoteIpv4InstanceVal,
+		RemoteIpv6Area:     remoteIpv6AreaVal,
+		RemoteIpv6Instance: remoteIpv6InstanceVal,
+		state:              attr.ValueStateKnown,
+	}, diags
+}
+
+func NewOspfv3ValueNull() Ospfv3Value {
+	return Ospfv3Value{
+		state: attr.ValueStateNull,
+	}
+}
+
+func NewOspfv3ValueUnknown() Ospfv3Value {
+	return Ospfv3Value{
+		state: attr.ValueStateUnknown,
+	}
+}
+
+func NewOspfv3Value(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) (Ospfv3Value, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	// Reference: https://github.com/hashicorp/terraform-plugin-framework/issues/521
+	ctx := context.Background()
+
+	for name, attributeType := range attributeTypes {
+		attribute, ok := attributes[name]
+
+		if !ok {
+			diags.AddError(
+				"Missing Ospfv3Value Attribute Value",
+				"While creating a Ospfv3Value value, a missing attribute value was detected. "+
+					"A Ospfv3Value must contain values for all attributes, even if null or unknown. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Ospfv3Value Attribute Name (%s) Expected Type: %s", name, attributeType.String()),
+			)
+
+			continue
+		}
+
+		if !attributeType.Equal(attribute.Type(ctx)) {
+			diags.AddError(
+				"Invalid Ospfv3Value Attribute Type",
+				"While creating a Ospfv3Value value, an invalid attribute value was detected. "+
+					"A Ospfv3Value must use a matching attribute type for the value. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Ospfv3Value Attribute Name (%s) Expected Type: %s\n", name, attributeType.String())+
+					fmt.Sprintf("Ospfv3Value Attribute Name (%s) Given Type: %s", name, attribute.Type(ctx)),
+			)
+		}
+	}
+
+	for name := range attributes {
+		_, ok := attributeTypes[name]
+
+		if !ok {
+			diags.AddError(
+				"Extra Ospfv3Value Attribute Value",
+				"While creating a Ospfv3Value value, an extra attribute value was detected. "+
+					"A Ospfv3Value must not contain values beyond the expected attribute types. "+
+					"This is always an issue with the provider and should be reported to the provider developers.\n\n"+
+					fmt.Sprintf("Extra Ospfv3Value Attribute Name: %s", name),
+			)
+		}
+	}
+
+	if diags.HasError() {
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	localIpv4AreaAttribute, ok := attributes["local_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_area is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	localIpv4AreaVal, ok := localIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_area expected to be basetypes.StringValue, was: %T`, localIpv4AreaAttribute))
+	}
+
+	localIpv4InstanceAttribute, ok := attributes["local_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv4_instance is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	localIpv4InstanceVal, ok := localIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv4_instance expected to be basetypes.StringValue, was: %T`, localIpv4InstanceAttribute))
+	}
+
+	localIpv6AreaAttribute, ok := attributes["local_ipv6_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv6_area is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	localIpv6AreaVal, ok := localIpv6AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv6_area expected to be basetypes.StringValue, was: %T`, localIpv6AreaAttribute))
+	}
+
+	localIpv6InstanceAttribute, ok := attributes["local_ipv6_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`local_ipv6_instance is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	localIpv6InstanceVal, ok := localIpv6InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`local_ipv6_instance expected to be basetypes.StringValue, was: %T`, localIpv6InstanceAttribute))
+	}
+
+	remoteIpv4AreaAttribute, ok := attributes["remote_ipv4_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_area is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	remoteIpv4AreaVal, ok := remoteIpv4AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_area expected to be basetypes.StringValue, was: %T`, remoteIpv4AreaAttribute))
+	}
+
+	remoteIpv4InstanceAttribute, ok := attributes["remote_ipv4_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv4_instance is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	remoteIpv4InstanceVal, ok := remoteIpv4InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv4_instance expected to be basetypes.StringValue, was: %T`, remoteIpv4InstanceAttribute))
+	}
+
+	remoteIpv6AreaAttribute, ok := attributes["remote_ipv6_area"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv6_area is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	remoteIpv6AreaVal, ok := remoteIpv6AreaAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv6_area expected to be basetypes.StringValue, was: %T`, remoteIpv6AreaAttribute))
+	}
+
+	remoteIpv6InstanceAttribute, ok := attributes["remote_ipv6_instance"]
+
+	if !ok {
+		diags.AddError(
+			"Attribute Missing",
+			`remote_ipv6_instance is missing from object`)
+
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	remoteIpv6InstanceVal, ok := remoteIpv6InstanceAttribute.(basetypes.StringValue)
+
+	if !ok {
+		diags.AddError(
+			"Attribute Wrong Type",
+			fmt.Sprintf(`remote_ipv6_instance expected to be basetypes.StringValue, was: %T`, remoteIpv6InstanceAttribute))
+	}
+
+	if diags.HasError() {
+		return NewOspfv3ValueUnknown(), diags
+	}
+
+	return Ospfv3Value{
+		LocalIpv4Area:      localIpv4AreaVal,
+		LocalIpv4Instance:  localIpv4InstanceVal,
+		LocalIpv6Area:      localIpv6AreaVal,
+		LocalIpv6Instance:  localIpv6InstanceVal,
+		RemoteIpv4Area:     remoteIpv4AreaVal,
+		RemoteIpv4Instance: remoteIpv4InstanceVal,
+		RemoteIpv6Area:     remoteIpv6AreaVal,
+		RemoteIpv6Instance: remoteIpv6InstanceVal,
+		state:              attr.ValueStateKnown,
+	}, diags
+}
+
+func NewOspfv3ValueMust(attributeTypes map[string]attr.Type, attributes map[string]attr.Value) Ospfv3Value {
+	object, diags := NewOspfv3Value(attributeTypes, attributes)
+
+	if diags.HasError() {
+		// This could potentially be added to the diag package.
+		diagsStrings := make([]string, 0, len(diags))
+
+		for _, diagnostic := range diags {
+			diagsStrings = append(diagsStrings, fmt.Sprintf(
+				"%s | %s | %s",
+				diagnostic.Severity(),
+				diagnostic.Summary(),
+				diagnostic.Detail()))
+		}
+
+		panic("NewOspfv3ValueMust received error(s): " + strings.Join(diagsStrings, "\n"))
+	}
+
+	return object
+}
+
+func (t Ospfv3Type) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	if in.Type() == nil {
+		return NewOspfv3ValueNull(), nil
+	}
+
+	if !in.Type().Equal(t.TerraformType(ctx)) {
+		return nil, fmt.Errorf("expected %s, got %s", t.TerraformType(ctx), in.Type())
+	}
+
+	if !in.IsKnown() {
+		return NewOspfv3ValueUnknown(), nil
+	}
+
+	if in.IsNull() {
+		return NewOspfv3ValueNull(), nil
+	}
+
+	attributes := map[string]attr.Value{}
+
+	val := map[string]tftypes.Value{}
+
+	err := in.As(&val)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range val {
+		a, err := t.AttrTypes[k].ValueFromTerraform(ctx, v)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes[k] = a
+	}
+
+	return NewOspfv3ValueMust(Ospfv3Value{}.AttributeTypes(ctx), attributes), nil
+}
+
+func (t Ospfv3Type) ValueType(ctx context.Context) attr.Value {
+	return Ospfv3Value{}
+}
+
+var _ basetypes.ObjectValuable = Ospfv3Value{}
+
+type Ospfv3Value struct {
+	LocalIpv4Area      basetypes.StringValue `tfsdk:"local_ipv4_area"`
+	LocalIpv4Instance  basetypes.StringValue `tfsdk:"local_ipv4_instance"`
+	LocalIpv6Area      basetypes.StringValue `tfsdk:"local_ipv6_area"`
+	LocalIpv6Instance  basetypes.StringValue `tfsdk:"local_ipv6_instance"`
+	RemoteIpv4Area     basetypes.StringValue `tfsdk:"remote_ipv4_area"`
+	RemoteIpv4Instance basetypes.StringValue `tfsdk:"remote_ipv4_instance"`
+	RemoteIpv6Area     basetypes.StringValue `tfsdk:"remote_ipv6_area"`
+	RemoteIpv6Instance basetypes.StringValue `tfsdk:"remote_ipv6_instance"`
+	state              attr.ValueState
+}
+
+func (v Ospfv3Value) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	attrTypes := make(map[string]tftypes.Type, 8)
+
+	var val tftypes.Value
+	var err error
+
+	attrTypes["local_ipv4_area"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["local_ipv4_instance"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["local_ipv6_area"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["local_ipv6_instance"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["remote_ipv4_area"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["remote_ipv4_instance"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["remote_ipv6_area"] = basetypes.StringType{}.TerraformType(ctx)
+	attrTypes["remote_ipv6_instance"] = basetypes.StringType{}.TerraformType(ctx)
+
+	objectType := tftypes.Object{AttributeTypes: attrTypes}
+
+	switch v.state {
+	case attr.ValueStateKnown:
+		vals := make(map[string]tftypes.Value, 8)
+
+		val, err = v.LocalIpv4Area.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["local_ipv4_area"] = val
+
+		val, err = v.LocalIpv4Instance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["local_ipv4_instance"] = val
+
+		val, err = v.LocalIpv6Area.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["local_ipv6_area"] = val
+
+		val, err = v.LocalIpv6Instance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["local_ipv6_instance"] = val
+
+		val, err = v.RemoteIpv4Area.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["remote_ipv4_area"] = val
+
+		val, err = v.RemoteIpv4Instance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["remote_ipv4_instance"] = val
+
+		val, err = v.RemoteIpv6Area.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["remote_ipv6_area"] = val
+
+		val, err = v.RemoteIpv6Instance.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		vals["remote_ipv6_instance"] = val
+
+		if err := tftypes.ValidateValue(objectType, vals); err != nil {
+			return tftypes.NewValue(objectType, tftypes.UnknownValue), err
+		}
+
+		return tftypes.NewValue(objectType, vals), nil
+	case attr.ValueStateNull:
+		return tftypes.NewValue(objectType, nil), nil
+	case attr.ValueStateUnknown:
+		return tftypes.NewValue(objectType, tftypes.UnknownValue), nil
+	default:
+		panic(fmt.Sprintf("unhandled Object state in ToTerraformValue: %s", v.state))
+	}
+}
+
+func (v Ospfv3Value) IsNull() bool {
+	return v.state == attr.ValueStateNull
+}
+
+func (v Ospfv3Value) IsUnknown() bool {
+	return v.state == attr.ValueStateUnknown
+}
+
+func (v Ospfv3Value) String() string {
+	return "Ospfv3Value"
+}
+
+func (v Ospfv3Value) ToObjectValue(ctx context.Context) (basetypes.ObjectValue, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	attributeTypes := map[string]attr.Type{
+		"local_ipv4_area":      basetypes.StringType{},
+		"local_ipv4_instance":  basetypes.StringType{},
+		"local_ipv6_area":      basetypes.StringType{},
+		"local_ipv6_instance":  basetypes.StringType{},
+		"remote_ipv4_area":     basetypes.StringType{},
+		"remote_ipv4_instance": basetypes.StringType{},
+		"remote_ipv6_area":     basetypes.StringType{},
+		"remote_ipv6_instance": basetypes.StringType{},
+	}
+
+	if v.IsNull() {
+		return types.ObjectNull(attributeTypes), diags
+	}
+
+	if v.IsUnknown() {
+		return types.ObjectUnknown(attributeTypes), diags
+	}
+
+	objVal, diags := types.ObjectValue(
+		attributeTypes,
+		map[string]attr.Value{
+			"local_ipv4_area":      v.LocalIpv4Area,
+			"local_ipv4_instance":  v.LocalIpv4Instance,
+			"local_ipv6_area":      v.LocalIpv6Area,
+			"local_ipv6_instance":  v.LocalIpv6Instance,
+			"remote_ipv4_area":     v.RemoteIpv4Area,
+			"remote_ipv4_instance": v.RemoteIpv4Instance,
+			"remote_ipv6_area":     v.RemoteIpv6Area,
+			"remote_ipv6_instance": v.RemoteIpv6Instance,
+		})
+
+	return objVal, diags
+}
+
+func (v Ospfv3Value) Equal(o attr.Value) bool {
+	other, ok := o.(Ospfv3Value)
+
+	if !ok {
+		return false
+	}
+
+	if v.state != other.state {
+		return false
+	}
+
+	if v.state != attr.ValueStateKnown {
+		return true
+	}
+
+	if !v.LocalIpv4Area.Equal(other.LocalIpv4Area) {
+		return false
+	}
+
+	if !v.LocalIpv4Instance.Equal(other.LocalIpv4Instance) {
+		return false
+	}
+
+	if !v.LocalIpv6Area.Equal(other.LocalIpv6Area) {
+		return false
+	}
+
+	if !v.LocalIpv6Instance.Equal(other.LocalIpv6Instance) {
+		return false
+	}
+
+	if !v.RemoteIpv4Area.Equal(other.RemoteIpv4Area) {
+		return false
+	}
+
+	if !v.RemoteIpv4Instance.Equal(other.RemoteIpv4Instance) {
+		return false
+	}
+
+	if !v.RemoteIpv6Area.Equal(other.RemoteIpv6Area) {
+		return false
+	}
+
+	if !v.RemoteIpv6Instance.Equal(other.RemoteIpv6Instance) {
+		return false
+	}
+
+	return true
+}
+
+func (v Ospfv3Value) Type(ctx context.Context) attr.Type {
+	return Ospfv3Type{
+		basetypes.ObjectType{
+			AttrTypes: v.AttributeTypes(ctx),
+		},
+	}
+}
+
+func (v Ospfv3Value) AttributeTypes(ctx context.Context) map[string]attr.Type {
+	return map[string]attr.Type{
+		"local_ipv4_area":      basetypes.StringType{},
+		"local_ipv4_instance":  basetypes.StringType{},
+		"local_ipv6_area":      basetypes.StringType{},
+		"local_ipv6_instance":  basetypes.StringType{},
+		"remote_ipv4_area":     basetypes.StringType{},
+		"remote_ipv4_instance": basetypes.StringType{},
+		"remote_ipv6_area":     basetypes.StringType{},
+		"remote_ipv6_instance": basetypes.StringType{},
 	}
 }
 

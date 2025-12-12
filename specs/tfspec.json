@@ -93,9 +93,55 @@
                         }
                     },
                     {
+                        "name": "alarms",
+                        "single_nested": {
+                            "computed_optional_required": "computed",
+                            "attributes": [
+                                {
+                                    "name": "critical",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "major",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "minor",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "warning",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "name": "api_version",
                         "string": {
                             "computed_optional_required": "computed"
+                        }
+                    },
+                    {
+                        "name": "deviations",
+                        "single_nested": {
+                            "computed_optional_required": "computed",
+                            "attributes": [
+                                {
+                                    "name": "count",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                }
+                            ]
                         }
                     },
                     {
@@ -189,7 +235,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -334,7 +380,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -403,7 +449,7 @@
                                                             "name": "ttl",
                                                             "int64": {
                                                                 "computed_optional_required": "optional",
-                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions."
+                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions."
                                                             }
                                                         }
                                                     ],
@@ -558,7 +604,7 @@
                                                 }
                                             }
                                         ],
-                                        "description": "Route leaking controlled by routing policies in and out of the DefaulRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                        "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                     }
                                 },
                                 {
@@ -593,7 +639,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -655,7 +701,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -748,7 +794,7 @@
                                                             "name": "ttl",
                                                             "int64": {
                                                                 "computed_optional_required": "optional",
-                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions."
+                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions."
                                                             }
                                                         }
                                                     ],
@@ -836,6 +882,25 @@
                                                 }
                                             },
                                             {
+                                                "name": "ospf",
+                                                "single_nested": {
+                                                    "computed_optional_required": "optional",
+                                                    "attributes": [
+                                                        {
+                                                            "name": "address_family",
+                                                            "list": {
+                                                                "computed_optional_required": "optional",
+                                                                "element_type": {
+                                                                    "string": {}
+                                                                },
+                                                                "description": "Selects enabled address families for OSPFv3. If not specified, both address families will be enabled by default when OSPFv3 underlay is configured."
+                                                            }
+                                                        }
+                                                    ],
+                                                    "description": "OSPF underlay properties."
+                                                }
+                                            },
+                                            {
                                                 "name": "protocol",
                                                 "list": {
                                                     "computed_optional_required": "optional",
@@ -901,7 +966,7 @@
                                     "name": "health",
                                     "int64": {
                                         "computed_optional_required": "computed",
-                                        "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emited by the Fabric such as ISL, DefaultRouteReflectors etc."
+                                        "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emitted by the Fabric such as ISL, DefaultRouteReflectors etc."
                                     }
                                 },
                                 {
@@ -1075,6 +1140,13 @@
                         }
                     },
                     {
+                        "name": "labelselector",
+                        "string": {
+                            "computed_optional_required": "computed_optional",
+                            "description": "Deprecated: a label selector string to filter the results based on CR labels"
+                        }
+                    },
+                    {
                         "name": "namespace",
                         "string": {
                             "computed_optional_required": "required",
@@ -1094,9 +1166,55 @@
                             "nested_object": {
                                 "attributes": [
                                     {
+                                        "name": "alarms",
+                                        "single_nested": {
+                                            "computed_optional_required": "computed",
+                                            "attributes": [
+                                                {
+                                                    "name": "critical",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "major",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "minor",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "warning",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
                                         "name": "api_version",
                                         "string": {
                                             "computed_optional_required": "computed"
+                                        }
+                                    },
+                                    {
+                                        "name": "deviations",
+                                        "single_nested": {
+                                            "computed_optional_required": "computed",
+                                            "attributes": [
+                                                {
+                                                    "name": "count",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -1190,7 +1308,7 @@
                                                                             }
                                                                         }
                                                                     ],
-                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                                 }
                                                             },
                                                             {
@@ -1335,7 +1453,7 @@
                                                                             }
                                                                         }
                                                                     ],
-                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                                 }
                                                             },
                                                             {
@@ -1404,7 +1522,7 @@
                                                                             "name": "ttl",
                                                                             "int64": {
                                                                                 "computed_optional_required": "optional",
-                                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions."
+                                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions."
                                                                             }
                                                                         }
                                                                     ],
@@ -1559,7 +1677,7 @@
                                                                 }
                                                             }
                                                         ],
-                                                        "description": "Route leaking controlled by routing policies in and out of the DefaulRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                        "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                     }
                                                 },
                                                 {
@@ -1594,7 +1712,7 @@
                                                                             }
                                                                         }
                                                                     ],
-                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                                 }
                                                             },
                                                             {
@@ -1656,7 +1774,7 @@
                                                                             }
                                                                         }
                                                                     ],
-                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                                 }
                                                             },
                                                             {
@@ -1749,7 +1867,7 @@
                                                                             "name": "ttl",
                                                                             "int64": {
                                                                                 "computed_optional_required": "optional",
-                                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions."
+                                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions."
                                                                             }
                                                                         }
                                                                     ],
@@ -1837,6 +1955,25 @@
                                                                 }
                                                             },
                                                             {
+                                                                "name": "ospf",
+                                                                "single_nested": {
+                                                                    "computed_optional_required": "optional",
+                                                                    "attributes": [
+                                                                        {
+                                                                            "name": "address_family",
+                                                                            "list": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "element_type": {
+                                                                                    "string": {}
+                                                                                },
+                                                                                "description": "Selects enabled address families for OSPFv3. If not specified, both address families will be enabled by default when OSPFv3 underlay is configured."
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "description": "OSPF underlay properties."
+                                                                }
+                                                            },
+                                                            {
                                                                 "name": "protocol",
                                                                 "list": {
                                                                     "computed_optional_required": "optional",
@@ -1902,7 +2039,7 @@
                                                     "name": "health",
                                                     "int64": {
                                                         "computed_optional_required": "computed",
-                                                        "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emited by the Fabric such as ISL, DefaultRouteReflectors etc."
+                                                        "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emitted by the Fabric such as ISL, DefaultRouteReflectors etc."
                                                     }
                                                 },
                                                 {
@@ -2086,9 +2223,55 @@
                         }
                     },
                     {
+                        "name": "alarms",
+                        "single_nested": {
+                            "computed_optional_required": "computed",
+                            "attributes": [
+                                {
+                                    "name": "critical",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "major",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "minor",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "warning",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "name": "api_version",
                         "string": {
                             "computed_optional_required": "computed"
+                        }
+                    },
+                    {
+                        "name": "deviations",
+                        "single_nested": {
+                            "computed_optional_required": "computed",
+                            "attributes": [
+                                {
+                                    "name": "count",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                }
+                            ]
                         }
                     },
                     {
@@ -2184,7 +2367,7 @@
                                                 "name": "ttl",
                                                 "int64": {
                                                     "computed_optional_required": "optional",
-                                                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions."
+                                                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions."
                                                 }
                                             }
                                         ],
@@ -2283,6 +2466,124 @@
                                     "string": {
                                         "computed_optional_required": "optional",
                                         "description": "Reference to an Interface."
+                                    }
+                                },
+                                {
+                                    "name": "ospf",
+                                    "single_nested": {
+                                        "computed_optional_required": "optional",
+                                        "attributes": [
+                                            {
+                                                "name": "enabled",
+                                                "bool": {
+                                                    "computed_optional_required": "optional",
+                                                    "description": "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean"
+                                                }
+                                            },
+                                            {
+                                                "name": "ospfv2",
+                                                "single_nested": {
+                                                    "computed_optional_required": "optional",
+                                                    "attributes": [
+                                                        {
+                                                            "name": "local_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "description": "OSPFv2 Parameters."
+                                                }
+                                            },
+                                            {
+                                                "name": "ospfv3",
+                                                "single_nested": {
+                                                    "computed_optional_required": "optional",
+                                                    "attributes": [
+                                                        {
+                                                            "name": "local_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv6_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFArea on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv6_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFInstance on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv6_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFArea on the remote interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv6_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFInstance on the remote interface."
+                                                            }
+                                                        }
+                                                    ],
+                                                    "description": "OSPFv3 Parameters."
+                                                }
+                                            }
+                                        ],
+                                        "description": "Enable or disable OSPF on the ISL."
                                     }
                                 },
                                 {
@@ -2400,7 +2701,7 @@
                                                 "name": "default_interface",
                                                 "string": {
                                                     "computed_optional_required": "computed",
-                                                    "description": "Reference to the DefaulInterface assocaited with the local interface"
+                                                    "description": "Reference to the DefaulInterface associated with the local interface"
                                                 }
                                             },
                                             {
@@ -2444,7 +2745,7 @@
                                                 "name": "default_interface",
                                                 "string": {
                                                     "computed_optional_required": "computed",
-                                                    "description": "Reference to the DefaulInterface assocaited with the remote interface"
+                                                    "description": "Reference to the DefaulInterface associated with the remote interface"
                                                 }
                                             },
                                             {
@@ -2491,6 +2792,13 @@
                         }
                     },
                     {
+                        "name": "labelselector",
+                        "string": {
+                            "computed_optional_required": "computed_optional",
+                            "description": "Deprecated: a label selector string to filter the results based on CR labels"
+                        }
+                    },
+                    {
                         "name": "namespace",
                         "string": {
                             "computed_optional_required": "required",
@@ -2510,9 +2818,55 @@
                             "nested_object": {
                                 "attributes": [
                                     {
+                                        "name": "alarms",
+                                        "single_nested": {
+                                            "computed_optional_required": "computed",
+                                            "attributes": [
+                                                {
+                                                    "name": "critical",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "major",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "minor",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "warning",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
                                         "name": "api_version",
                                         "string": {
                                             "computed_optional_required": "computed"
+                                        }
+                                    },
+                                    {
+                                        "name": "deviations",
+                                        "single_nested": {
+                                            "computed_optional_required": "computed",
+                                            "attributes": [
+                                                {
+                                                    "name": "count",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -2608,7 +2962,7 @@
                                                                 "name": "ttl",
                                                                 "int64": {
                                                                     "computed_optional_required": "optional",
-                                                                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions."
+                                                                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions."
                                                                 }
                                                             }
                                                         ],
@@ -2707,6 +3061,124 @@
                                                     "string": {
                                                         "computed_optional_required": "optional",
                                                         "description": "Reference to an Interface."
+                                                    }
+                                                },
+                                                {
+                                                    "name": "ospf",
+                                                    "single_nested": {
+                                                        "computed_optional_required": "optional",
+                                                        "attributes": [
+                                                            {
+                                                                "name": "enabled",
+                                                                "bool": {
+                                                                    "computed_optional_required": "optional",
+                                                                    "description": "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean"
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "ospfv2",
+                                                                "single_nested": {
+                                                                    "computed_optional_required": "optional",
+                                                                    "attributes": [
+                                                                        {
+                                                                            "name": "local_ipv4_area",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the local interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "local_ipv4_instance",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "remote_ipv4_area",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "remote_ipv4_instance",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "description": "OSPFv2 Parameters."
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "ospfv3",
+                                                                "single_nested": {
+                                                                    "computed_optional_required": "optional",
+                                                                    "attributes": [
+                                                                        {
+                                                                            "name": "local_ipv4_area",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the local interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "local_ipv4_instance",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "local_ipv6_area",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV6 DefaultOSPFArea on the local interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "local_ipv6_instance",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV6 DefaultOSPFInstance on the local interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "remote_ipv4_area",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "remote_ipv4_instance",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "remote_ipv6_area",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV6 DefaultOSPFArea on the remote interface."
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "name": "remote_ipv6_instance",
+                                                                            "string": {
+                                                                                "computed_optional_required": "optional",
+                                                                                "description": "Reference to a IPV6 DefaultOSPFInstance on the remote interface."
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "description": "OSPFv3 Parameters."
+                                                                }
+                                                            }
+                                                        ],
+                                                        "description": "Enable or disable OSPF on the ISL."
                                                     }
                                                 },
                                                 {
@@ -2824,7 +3296,7 @@
                                                                 "name": "default_interface",
                                                                 "string": {
                                                                     "computed_optional_required": "computed",
-                                                                    "description": "Reference to the DefaulInterface assocaited with the local interface"
+                                                                    "description": "Reference to the DefaulInterface associated with the local interface"
                                                                 }
                                                             },
                                                             {
@@ -2868,7 +3340,7 @@
                                                                 "name": "default_interface",
                                                                 "string": {
                                                                     "computed_optional_required": "computed",
-                                                                    "description": "Reference to the DefaulInterface assocaited with the remote interface"
+                                                                    "description": "Reference to the DefaulInterface associated with the remote interface"
                                                                 }
                                                             },
                                                             {
@@ -2918,9 +3390,55 @@
                         }
                     },
                     {
+                        "name": "alarms",
+                        "single_nested": {
+                            "computed_optional_required": "computed",
+                            "attributes": [
+                                {
+                                    "name": "critical",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "major",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "minor",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                },
+                                {
+                                    "name": "warning",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "name": "api_version",
                         "string": {
                             "computed_optional_required": "computed"
+                        }
+                    },
+                    {
+                        "name": "deviations",
+                        "single_nested": {
+                            "computed_optional_required": "computed",
+                            "attributes": [
+                                {
+                                    "name": "count",
+                                    "int64": {
+                                        "computed_optional_required": "computed"
+                                    }
+                                }
+                            ]
                         }
                     },
                     {
@@ -3145,6 +3663,13 @@
                         }
                     },
                     {
+                        "name": "labelselector",
+                        "string": {
+                            "computed_optional_required": "computed_optional",
+                            "description": "Deprecated: a label selector string to filter the results based on CR labels"
+                        }
+                    },
+                    {
                         "name": "namespace",
                         "string": {
                             "computed_optional_required": "required",
@@ -3164,9 +3689,55 @@
                             "nested_object": {
                                 "attributes": [
                                     {
+                                        "name": "alarms",
+                                        "single_nested": {
+                                            "computed_optional_required": "computed",
+                                            "attributes": [
+                                                {
+                                                    "name": "critical",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "major",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "minor",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "warning",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
                                         "name": "api_version",
                                         "string": {
                                             "computed_optional_required": "computed"
+                                        }
+                                    },
+                                    {
+                                        "name": "deviations",
+                                        "single_nested": {
+                                            "computed_optional_required": "computed",
+                                            "attributes": [
+                                                {
+                                                    "name": "count",
+                                                    "int64": {
+                                                        "computed_optional_required": "computed"
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -3529,6 +4100,38 @@
             "schema": {
                 "attributes": [
                     {
+                        "name": "alarms",
+                        "single_nested": {
+                            "computed_optional_required": "computed_optional",
+                            "attributes": [
+                                {
+                                    "name": "critical",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "major",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "minor",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "warning",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "name": "api_version",
                         "string": {
                             "computed_optional_required": "computed_optional",
@@ -3547,6 +4150,20 @@
                                             }
                                         ],
                                         "schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^fabrics\\\\.eda\\\\.nokia\\\\.com/v1alpha1$\"), \"\")"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "deviations",
+                        "single_nested": {
+                            "computed_optional_required": "computed_optional",
+                            "attributes": [
+                                {
+                                    "name": "count",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
                                     }
                                 }
                             ]
@@ -3686,7 +4303,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -3867,7 +4484,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -3999,7 +4616,7 @@
                                                             "name": "ttl",
                                                             "int64": {
                                                                 "computed_optional_required": "optional",
-                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
+                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
                                                                 "validators": [
                                                                     {
                                                                         "custom": {
@@ -4226,7 +4843,7 @@
                                                 }
                                             }
                                         ],
-                                        "description": "Route leaking controlled by routing policies in and out of the DefaulRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                        "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                     }
                                 },
                                 {
@@ -4261,7 +4878,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -4323,7 +4940,7 @@
                                                             }
                                                         }
                                                     ],
-                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specifided under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
+                                                    "description": "Route leaking controlled by routing policies in and out of the DefaultRouters on each node.  If specified under the Leafs, Spines, SuperSpines, or BorderLeafs those will take precedence."
                                                 }
                                             },
                                             {
@@ -4479,7 +5096,7 @@
                                                             "name": "ttl",
                                                             "int64": {
                                                                 "computed_optional_required": "optional",
-                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
+                                                                "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
                                                                 "validators": [
                                                                     {
                                                                         "custom": {
@@ -4501,7 +5118,7 @@
                                             {
                                                 "name": "bgp_1",
                                                 "single_nested": {
-                                                    "computed_optional_required": "required",
+                                                    "computed_optional_required": "optional",
                                                     "attributes": [
                                                         {
                                                             "name": "asn_pool",
@@ -4627,6 +5244,25 @@
                                                 }
                                             },
                                             {
+                                                "name": "ospf",
+                                                "single_nested": {
+                                                    "computed_optional_required": "optional",
+                                                    "attributes": [
+                                                        {
+                                                            "name": "address_family",
+                                                            "list": {
+                                                                "computed_optional_required": "optional",
+                                                                "element_type": {
+                                                                    "string": {}
+                                                                },
+                                                                "description": "Selects enabled address families for OSPFv3. If not specified, both address families will be enabled by default when OSPFv3 underlay is configured."
+                                                            }
+                                                        }
+                                                    ],
+                                                    "description": "OSPF underlay properties."
+                                                }
+                                            },
+                                            {
                                                 "name": "protocol",
                                                 "list": {
                                                     "computed_optional_required": "required",
@@ -4692,7 +5328,7 @@
                                     "name": "health",
                                     "int64": {
                                         "computed_optional_required": "computed_optional",
-                                        "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emited by the Fabric such as ISL, DefaultRouteReflectors etc."
+                                        "description": "Indicates the health score of the Fabric.  The health score of the Fabric is determined by the aggregate health score of the resources emitted by the Fabric such as ISL, DefaultRouteReflectors etc."
                                     }
                                 },
                                 {
@@ -4859,6 +5495,38 @@
             "schema": {
                 "attributes": [
                     {
+                        "name": "alarms",
+                        "single_nested": {
+                            "computed_optional_required": "computed_optional",
+                            "attributes": [
+                                {
+                                    "name": "critical",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "major",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "minor",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "warning",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "name": "api_version",
                         "string": {
                             "computed_optional_required": "computed_optional",
@@ -4877,6 +5545,20 @@
                                             }
                                         ],
                                         "schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^fabrics\\\\.eda\\\\.nokia\\\\.com/v1alpha1$\"), \"\")"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "deviations",
+                        "single_nested": {
+                            "computed_optional_required": "computed_optional",
+                            "attributes": [
+                                {
+                                    "name": "count",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
                                     }
                                 }
                             ]
@@ -5081,7 +5763,7 @@
                                                 "name": "ttl",
                                                 "int64": {
                                                     "computed_optional_required": "optional",
-                                                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not appllicable to single-hop BFD sessions.",
+                                                    "description": "Sets custom IP TTL or Hop Limit for multi-hop BFD sessions packets. Not applicable to single-hop BFD sessions.",
                                                     "validators": [
                                                         {
                                                             "custom": {
@@ -5234,6 +5916,124 @@
                                     }
                                 },
                                 {
+                                    "name": "ospf",
+                                    "single_nested": {
+                                        "computed_optional_required": "optional",
+                                        "attributes": [
+                                            {
+                                                "name": "enabled",
+                                                "bool": {
+                                                    "computed_optional_required": "required",
+                                                    "description": "Enable or disable OSPF between the two endpoints of the ISL.\nkubebuilder:validation:Boolean"
+                                                }
+                                            },
+                                            {
+                                                "name": "ospfv2",
+                                                "single_nested": {
+                                                    "computed_optional_required": "optional",
+                                                    "attributes": [
+                                                        {
+                                                            "name": "local_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "description": "OSPFv2 Parameters."
+                                                }
+                                            },
+                                            {
+                                                "name": "ospfv3",
+                                                "single_nested": {
+                                                    "computed_optional_required": "optional",
+                                                    "attributes": [
+                                                        {
+                                                            "name": "local_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the local interface"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv6_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFArea on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "local_ipv6_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFInstance on the local interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFArea on the remote interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv4_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV4 DefaultOSPFInstance on the remote interface"
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv6_area",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFArea on the remote interface."
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "remote_ipv6_instance",
+                                                            "string": {
+                                                                "computed_optional_required": "optional",
+                                                                "description": "Reference to a IPV6 DefaultOSPFInstance on the remote interface."
+                                                            }
+                                                        }
+                                                    ],
+                                                    "description": "OSPFv3 Parameters."
+                                                }
+                                            }
+                                        ],
+                                        "description": "Enable or disable OSPF on the ISL."
+                                    }
+                                },
+                                {
                                     "name": "pool_ipv4",
                                     "string": {
                                         "computed_optional_required": "optional",
@@ -5372,7 +6172,7 @@
                                                 "name": "default_interface",
                                                 "string": {
                                                     "computed_optional_required": "computed_optional",
-                                                    "description": "Reference to the DefaulInterface assocaited with the local interface"
+                                                    "description": "Reference to the DefaulInterface associated with the local interface"
                                                 }
                                             },
                                             {
@@ -5416,7 +6216,7 @@
                                                 "name": "default_interface",
                                                 "string": {
                                                     "computed_optional_required": "computed_optional",
-                                                    "description": "Reference to the DefaulInterface assocaited with the remote interface"
+                                                    "description": "Reference to the DefaulInterface associated with the remote interface"
                                                 }
                                             },
                                             {
@@ -5439,6 +6239,351 @@
                         "string": {
                             "computed_optional_required": "computed_optional",
                             "description": "name of the ISL"
+                        }
+                    },
+                    {
+                        "name": "namespace",
+                        "string": {
+                            "computed_optional_required": "computed_optional",
+                            "description": "the namespace scope in which to operate"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "isl_ping",
+            "schema": {
+                "attributes": [
+                    {
+                        "name": "alarms",
+                        "single_nested": {
+                            "computed_optional_required": "computed_optional",
+                            "attributes": [
+                                {
+                                    "name": "critical",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "major",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "minor",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                },
+                                {
+                                    "name": "warning",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "api_version",
+                        "string": {
+                            "computed_optional_required": "computed_optional",
+                            "default": {
+                                "static": "fabrics.eda.nokia.com/v1alpha1"
+                            },
+                            "validators": [
+                                {
+                                    "custom": {
+                                        "imports": [
+                                            {
+                                                "path": "regexp"
+                                            },
+                                            {
+                                                "path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+                                            }
+                                        ],
+                                        "schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^fabrics\\\\.eda\\\\.nokia\\\\.com/v1alpha1$\"), \"\")"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "deviations",
+                        "single_nested": {
+                            "computed_optional_required": "computed_optional",
+                            "attributes": [
+                                {
+                                    "name": "count",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "kind",
+                        "string": {
+                            "computed_optional_required": "computed_optional",
+                            "default": {
+                                "static": "IslPing"
+                            },
+                            "validators": [
+                                {
+                                    "custom": {
+                                        "imports": [
+                                            {
+                                                "path": "regexp"
+                                            },
+                                            {
+                                                "path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+                                            }
+                                        ],
+                                        "schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^IslPing$\"), \"\")"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "metadata",
+                        "single_nested": {
+                            "computed_optional_required": "required",
+                            "attributes": [
+                                {
+                                    "name": "annotations",
+                                    "map": {
+                                        "computed_optional_required": "computed_optional",
+                                        "element_type": {
+                                            "string": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "labels",
+                                    "map": {
+                                        "computed_optional_required": "computed_optional",
+                                        "element_type": {
+                                            "string": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "name",
+                                    "string": {
+                                        "computed_optional_required": "required",
+                                        "validators": [
+                                            {
+                                                "custom": {
+                                                    "imports": [
+                                                        {
+                                                            "path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+                                                        }
+                                                    ],
+                                                    "schema_definition": "stringvalidator.LengthAtMost(253)"
+                                                }
+                                            },
+                                            {
+                                                "custom": {
+                                                    "imports": [
+                                                        {
+                                                            "path": "regexp"
+                                                        },
+                                                        {
+                                                            "path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+                                                        }
+                                                    ],
+                                                    "schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$\"), \"\")"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "namespace",
+                                    "string": {
+                                        "computed_optional_required": "required"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "spec",
+                        "single_nested": {
+                            "computed_optional_required": "required",
+                            "attributes": [
+                                {
+                                    "name": "count",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional",
+                                        "default": {
+                                            "static": 1
+                                        },
+                                        "description": "Count is the number of pings to send."
+                                    }
+                                },
+                                {
+                                    "name": "isl_selectors",
+                                    "list": {
+                                        "computed_optional_required": "optional",
+                                        "element_type": {
+                                            "string": {}
+                                        },
+                                        "description": "Inter-Switch Link Selectors is a list of selectors to execute ISL pings for.\nThis is a list of label expressions, e.g. [\"eda.nokia.com/role=leaf\", \"eda.nokia.com/region=us-west\"]."
+                                    }
+                                },
+                                {
+                                    "name": "isls",
+                                    "list": {
+                                        "computed_optional_required": "optional",
+                                        "element_type": {
+                                            "string": {}
+                                        },
+                                        "description": "Inter-Switch Links is a list of named ISL resources to execute ISL pings for."
+                                    }
+                                },
+                                {
+                                    "name": "timeout_seconds",
+                                    "int64": {
+                                        "computed_optional_required": "computed_optional",
+                                        "default": {
+                                            "static": 5
+                                        },
+                                        "description": "TimeoutSeconds is the timeout for the ping in seconds."
+                                    }
+                                }
+                            ],
+                            "description": "This workflow is used to ping ISLs (Inter-Switch Links) to verify connectivity within a Fabric.\nIt accepts a list of fabrics, ISLs, or selectors for both to match ISLs,\nand returns the results of the pings, including the status of each ISL."
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "single_nested": {
+                            "computed_optional_required": "computed_optional",
+                            "attributes": [
+                                {
+                                    "name": "details",
+                                    "list_nested": {
+                                        "computed_optional_required": "computed_optional",
+                                        "nested_object": {
+                                            "attributes": [
+                                                {
+                                                    "name": "details_1",
+                                                    "single_nested": {
+                                                        "computed_optional_required": "computed_optional",
+                                                        "attributes": [
+                                                            {
+                                                                "name": "average_time_nanoseconds",
+                                                                "int64": {
+                                                                    "computed_optional_required": "computed_optional",
+                                                                    "description": "Average time taken for a ping reply."
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "max_time_nanoseconds",
+                                                                "int64": {
+                                                                    "computed_optional_required": "computed_optional",
+                                                                    "description": "Maximum time taken for a ping reply."
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "min_time_nanoseconds",
+                                                                "int64": {
+                                                                    "computed_optional_required": "computed_optional",
+                                                                    "description": "Minimum time taken for a ping reply."
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "received",
+                                                                "int64": {
+                                                                    "computed_optional_required": "required",
+                                                                    "description": "Number of pings received."
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "sent",
+                                                                "int64": {
+                                                                    "computed_optional_required": "required",
+                                                                    "description": "Number of pings sent."
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "std_dev_nanoseconds",
+                                                                "int64": {
+                                                                    "computed_optional_required": "computed_optional",
+                                                                    "description": "Standard deviation of time taken for all pings."
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "total_time_nanoseconds",
+                                                                "int64": {
+                                                                    "computed_optional_required": "computed_optional",
+                                                                    "description": "Total time taken for all pings."
+                                                                }
+                                                            }
+                                                        ],
+                                                        "description": "Details of the ping result, if available."
+                                                    }
+                                                },
+                                                {
+                                                    "name": "error",
+                                                    "string": {
+                                                        "computed_optional_required": "computed_optional",
+                                                        "description": "Error message, if the ping failed."
+                                                    }
+                                                },
+                                                {
+                                                    "name": "name",
+                                                    "string": {
+                                                        "computed_optional_required": "computed_optional",
+                                                        "description": "Name of the ping result."
+                                                    }
+                                                },
+                                                {
+                                                    "name": "success",
+                                                    "bool": {
+                                                        "computed_optional_required": "required",
+                                                        "description": "Indicates if the ping was successful."
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "description": "Details contains the results of the pings performed for each ISL.\nEach entry in the list corresponds to an ISL that was pinged."
+                                    }
+                                },
+                                {
+                                    "name": "result",
+                                    "string": {
+                                        "computed_optional_required": "computed_optional",
+                                        "description": "Result is the overall result of the ping operation.\nIt can be one of the following values:\n- \"Success\": All pings were successful.\n- \"Failed\": No pings were successful.\n- \"PartialSuccess\": Some pings were successful, but not all.",
+                                        "validators": [
+                                            {
+                                                "custom": {
+                                                    "imports": [
+                                                        {
+                                                            "path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+                                                        }
+                                                    ],
+                                                    "schema_definition": "stringvalidator.OneOf(\n\"Success\",\n\"Failed\",\n\"PartialSuccess\",\n)"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "description": "The result of the ISL ping"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "string": {
+                            "computed_optional_required": "computed_optional",
+                            "description": "name of the IslPing"
                         }
                     },
                     {
