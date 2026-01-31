@@ -10,7 +10,7 @@ Path,Method,Schema,Model Name,Supported,Datasource,Resource
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/_deleted,GET,com.nokia.eda.fabrics.v1alpha1.Fabric_DeletedResources,,false,false,false
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name},DELETE,Status,fabric,true,false,true
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name},GET,com.nokia.eda.fabrics.v1alpha1.Fabric,fabric,true,true,true
-/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name},PATCH,Patch,,false,false,false
+/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name},PATCH,com.nokia.eda.fabrics.v1alpha1.Fabric,,false,false,false
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name},PUT,com.nokia.eda.fabrics.v1alpha1.Fabric,fabric,true,false,true
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_revs,GET,ResourceHistory,,false,false,false
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_targets,GET,IntentTargets,,false,false,false
@@ -22,7 +22,7 @@ Path,Method,Schema,Model Name,Supported,Datasource,Resource
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/_deleted,GET,com.nokia.eda.fabrics.v1alpha1.ISL_DeletedResources,,false,false,false
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name},DELETE,Status,isl,true,false,true
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name},GET,com.nokia.eda.fabrics.v1alpha1.ISL,isl,true,true,true
-/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name},PATCH,Patch,,false,false,false
+/apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name},PATCH,com.nokia.eda.fabrics.v1alpha1.ISL,,false,false,false
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name},PUT,com.nokia.eda.fabrics.v1alpha1.ISL,isl,true,false,true
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_revs,GET,ResourceHistory,,false,false,false
 /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_targets,GET,IntentTargets,,false,false,false

@@ -19,14 +19,6 @@ k8_s_topology_request:
       path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}/_topology
       method: POST
 
-patch:
-  - update:
-      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
-      method: PATCH
-  - update:
-      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
-      method: PATCH
-
 resource_history:
   - read:
       path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}/_revs
@@ -81,6 +73,9 @@ com.nokia.eda.fabrics.v1alpha1.fabric:
   - update:
       path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
       method: PUT
+  - update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/fabrics/{name}
+      method: PATCH
 
 com.nokia.eda.fabrics.v1alpha1.fabric_list:
   - read:
@@ -108,6 +103,9 @@ com.nokia.eda.fabrics.v1alpha1.isl:
   - update:
       path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
       method: PUT
+  - update:
+      path: /apps/fabrics.eda.nokia.com/v1alpha1/namespaces/{namespace}/isls/{name}
+      method: PATCH
 
 com.nokia.eda.fabrics.v1alpha1.isl_list:
   - read:
@@ -143,8 +141,8 @@ com.nokia.eda.fabrics.v1alpha1.isl_ping_list:
 
 totalPaths: 25
 totalSchemas: 70
-usedSchemas: 19
-unusedSchemas: 51
+usedSchemas: 18
+unusedSchemas: 52
 unusedSchemaList:
   - AppGroupVersion
   - ErrorIndex
@@ -153,6 +151,7 @@ unusedSchemaList:
   - IntentTarget
   - K8SPatchOp
   - OverlayState
+  - Patch
   - Resource
   - ResourceHistoryEntry
   - StatusDetails
